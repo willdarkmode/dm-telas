@@ -1,0 +1,20 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
+<%@ taglib prefix="snk" uri="/WEB-INF/tld/sankhyaUtil.tld" %>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Fluxo de Caixa — Diretoria</title>
+<snk:load/>
+<!-- Template de desenvolvimento: os recursos dependentes de consultas financeiras não estão publicados. -->
+<link rel="stylesheet" href="https://willdarkmode.github.io/dm-telas/fluxo-caixa-diretoria/css/dashboard.css?v=0.1.0" />
+</head>
+<body>
+<main class="gg-start">
+  <h1>Fluxo de Caixa — Diretoria</h1>
+  <p>Estrutura HTML5 em desenvolvimento. Os módulos financeiros ainda não foram publicados.</p>
+  <p>Referência: gadget 380 · Homologação: gadget 465</p>
+</main>
+</body>
+</html>
