@@ -1,4 +1,4 @@
-/* GoldenGear Fluxo de Caixa — inicializacao Pages 0.2.0.
+/* GoldenGear Fluxo de Caixa — inicializacao Pages 0.3.4.
    Somente consultas tecnicas, sem valores monetarios ou regras financeiras publicadas. */
 (function () {
   "use strict";
@@ -33,7 +33,7 @@
     '<div class="gg-frame"><aside class="gg-side">'+
       '<div class="gg-brand"><span class="gg-mark">G</span><div><strong>GoldenGear</strong><small>GESTÃO FINANCEIRA</small></div></div>'+
       '<div class="gg-side-caption">FLUXO DE CAIXA</div><nav id="gg-menu" aria-label="Seções do painel"></nav>'+
-      '<div class="gg-side-bottom"><span class="gg-pulse"></span> HTML5 Pages · v0.2.0<br><small>Homologação no gadget 465</small></div>'+
+      '<div class="gg-side-bottom"><span class="gg-pulse"></span> HTML5 Pages · v0.3.4<br><small>Homologação no gadget 465</small></div>'+
     '</aside><main class="gg-main">'+
       '<header class="gg-head"><div><div class="gg-eyebrow">DIRETORIA / SANKHYA</div><h1 id="gg-title">Fluxo de Caixa — Diretoria</h1><p id="gg-subtitle"></p></div>'+
       '<button type="button" class="gg-refresh" id="gg-refresh">↻ Atualizar</button></header>'+
@@ -51,6 +51,10 @@
     byId("gg-subtitle").textContent=page.subtitle;
     if (page.id!=="078") {
       byId("gg-body").innerHTML='<section class="gg-panel"><div class="gg-kicker">SEÇÃO ORIGINAL · '+escapeHtml(page.id)+'</div><h2>'+escapeHtml(page.title)+'</h2><p>Esta seção está preparada na navegação HTML5. As consultas e o detalhamento financeiro serão migrados na etapa de homologação com o gadget 380.</p></section>';
+      return;
+    }
+    if (window.GGFinancePrincipal && typeof window.GGFinancePrincipal.render === "function") {
+      window.GGFinancePrincipal.render({container:byId("gg-body"),companies:state.companies,selected:state.selected,execute:query,setSelected:ids=>{state.selected=ids;}});
       return;
     }
     byId("gg-body").innerHTML =
@@ -80,7 +84,8 @@
       state.selected=(preferred.length?preferred:state.companies).map(c=>c.CODEMP);
       state.connection="Conectado";
       render();
-      await financialCount();
+      if (window.GGFinancePrincipal) await window.GGFinancePrincipal.load();
+      else await financialCount();
     } catch(e) {
       state.connection="Falha na consulta";
       render();
