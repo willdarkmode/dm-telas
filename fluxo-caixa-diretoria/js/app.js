@@ -121,6 +121,6 @@
       financialCount();
     }
   });
-  window.GGFluxoCaixa={version:"0.2.0",openSection:id=>{state.page=id;render();},reload:loadCompanies};
+  window.GGFluxoCaixa={version:"0.2.1",openSection:id=>{state.page=id;render();},reload:loadCompanies,runSQL:query,getCompanies:()=>state.companies.slice(),getSelected:()=>state.selected.slice()};
   loadCompanies();
 })();
