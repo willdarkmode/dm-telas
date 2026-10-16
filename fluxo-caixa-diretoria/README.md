@@ -53,3 +53,11 @@ O formato esperado do site é `https://willdarkmode.github.io/dm-telas/fluxo-cai
 **A URL do Pages ainda não pôde ser confirmada como publicamente acessível a partir do ambiente de preparação.** A publicação só estará efetiva após o GitHub Actions finalizar com sucesso.
 
 A consulta técnica de contagem **não substitui as 26 SQLs originais**. As sete seções originais permanecem planejadas, e nenhum saldo/valor financeiro foi publicado como resultado no Pages.
+
+## Versão v0.3.4 — retorno ao contrato da v0.2
+
+A v0.3.1–0.3.3 apresentou objeto `{c,b}` no callback de `executeQuery()`, inclusive para `SELECT 1 FROM DUAL`. Não se provou defeito na consulta SQL; a integração foi revertida ao **caminho da v0.2 que já funcionou**: JSP de entrada, JavaScript externo carregado pelo GitHub Pages e ponte única `executeQuery` no `js/app.js`.
+
+Arquivos de interface versionados: `js/app.js` (ponte), `js/financeiro.js` (indicadores), `css/dashboard.css`, `css/financeiro.css`. SQL financeiro original permanece no JSP distribuído por ZIP para homologação no **465**, não no Pages público. O workflow do Pages publica apenas arquivos explicitamente listados.
+
+Antes de importar o ZIP v0.3.4, aguardar conclusão do workflow GitHub Actions e verificar `js/app.js`, `js/financeiro.js` e `css/financeiro.css` nas URLs públicas. **Ainda não foi homologado em execução real no Sankhya**; indicadores e gráfico devem ser comparados ao gadget 380.
