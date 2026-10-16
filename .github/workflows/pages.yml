@@ -4,7 +4,9 @@ on:
     branches: [main]
     paths:
       - "fluxo-caixa-diretoria/css/dashboard.css"
+      - "fluxo-caixa-diretoria/css/financeiro.css"
       - "fluxo-caixa-diretoria/js/app.js"
+      - "fluxo-caixa-diretoria/js/financeiro.js"
       - "fluxo-caixa-diretoria/index.html"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
@@ -33,7 +35,9 @@ jobs:
           set -euo pipefail
           mkdir -p public-site/fluxo-caixa-diretoria/css public-site/fluxo-caixa-diretoria/js
           cp fluxo-caixa-diretoria/css/dashboard.css public-site/fluxo-caixa-diretoria/css/dashboard.css
+          cp fluxo-caixa-diretoria/css/financeiro.css public-site/fluxo-caixa-diretoria/css/financeiro.css
           cp fluxo-caixa-diretoria/js/app.js public-site/fluxo-caixa-diretoria/js/app.js
+          cp fluxo-caixa-diretoria/js/financeiro.js public-site/fluxo-caixa-diretoria/js/financeiro.js
           cp fluxo-caixa-diretoria/index.html public-site/fluxo-caixa-diretoria/index.html
           printf '%s\n' '<!doctype html><html lang="pt-BR"><meta charset="utf-8"><title>GoldenGear — telas</title><body><h1>GoldenGear — Telas HTML5</h1><p>Recursos publicos para componentes Sankhya.</p></body></html>' > public-site/index.html
           touch public-site/.nojekyll
