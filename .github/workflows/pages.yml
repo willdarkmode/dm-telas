@@ -1,0 +1,48 @@
+name: Publicar apenas arquivos aprovados no GitHub Pages
+on:
+  push:
+    branches: [main]
+    paths:
+      - "fluxo-caixa-diretoria/css/dashboard.css"
+      - "fluxo-caixa-diretoria/index.html"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Obter repositorio privado
+        uses: actions/checkout@v4
+      - name: Criar distribuicao publica por lista de permissao
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p public-site/fluxo-caixa-diretoria/css
+          cp fluxo-caixa-diretoria/css/dashboard.css public-site/fluxo-caixa-diretoria/css/dashboard.css
+          cp fluxo-caixa-diretoria/index.html public-site/fluxo-caixa-diretoria/index.html
+          printf '%s\n' '<!doctype html><html lang="pt-BR"><meta charset="utf-8"><title>GoldenGear — telas</title><body><h1>GoldenGear — Telas HTML5</h1><p>Recursos publicos para componentes Sankhya.</p></body></html>' > public-site/index.html
+          touch public-site/.nojekyll
+          echo 'Arquivos enviados publicamente:'
+          find public-site -type f -maxdepth 4 -print
+      - name: Preparar Pages
+        uses: actions/configure-pages@v5
+      - name: Enviar artefato com somente arquivos aprovados
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public-site
+      - name: Publicar GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
