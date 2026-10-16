@@ -29,6 +29,11 @@ jobs:
     steps:
       - name: Obter repositorio privado
         uses: actions/checkout@v4
+      - name: Validar sintaxe dos modulos JavaScript
+        shell: bash
+        run: |
+          node --check fluxo-caixa-diretoria/js/app.js
+          node --check fluxo-caixa-diretoria/js/financeiro.js
       - name: Criar distribuicao publica por lista de permissao
         shell: bash
         run: |
