@@ -1,17 +1,17 @@
 # Fluxo de Caixa — Diretoria
 
-Portabilidade do gadget Sankhya **380** para HTML5, desenvolvida e testada somente no gadget **465**.
+Projeto privado de portabilidade do gadget Sankhya **380** para HTML5, em testes no gadget **465**.
 
-## Estratégia
+## Arquitetura proposta
 
 Inspirada em `willdarkmode/DM-Dashboard`:
-- um componente HTML5 com JSP de entrada mínimo;
-- navegação entre as sete seções via JavaScript;
-- arquivos estáticos versionados e servidos via GitHub Pages, após configuração;
-- acesso aos dados realizado no contexto autenticado do Sankhya;
-- conferência dos valores com o gadget original antes de implantação.
+- um único componente HTML5, com JSP mínimo;
+- navegação interna em JavaScript entre sete seções;
+- dados consultados no contexto autenticado do Sankhya via `executeQuery()`;
+- CSS e JS desacoplados do JSP e versionados;
+- dados e regras homologados contra o gadget original.
 
-## Telas a preservar
+## Sete seções a preservar
 
 1. Principal
 2. Centros de Custo
@@ -21,20 +21,20 @@ Inspirada em `willdarkmode/DM-Dashboard`:
 6. Receitas Pendentes
 7. Despesas Pendentes
 
-## Estado do desenvolvimento
+## Estado
 
-**Estrutura inicial publicada; NÃO apta à implantação.** A aplicação completa depende de JavaScript de consultas financeiras ainda não publicado por conter regras internas de negócio e referências específicas às contas financeiras.
+**Base inicial em desenvolvimento, ainda não homologada.** O Pages publica por enquanto apenas uma página de referência e CSS, sem SQL financeiro. O JSP de demonstração `principal.jsp.template` não é uma versão pronta para implantação.
 
-O projeto original do fluxo continua no pacote de trabalho da conversa e o gadget **380** permanece como referência funcional. O erro HTTP 500 da primeira tentativa não foi definitivamente diagnosticado em logs.
+A equivalência dos 26 SQLs originais, das regras, dos detalhamentos e da abertura nativa da Movimentação Financeira ainda precisa de validação. O erro HTTP 500 da primeira portabilidade não foi esclarecido por logs.
 
-## Segurança / publicação
+## Segurança e Pages
 
-Este repositório está **público**. Nenhuma consulta financeira real, dados bancários, credenciais ou identificadores sensíveis serão publicados aqui sem autorização apropriada.
+**O repositório é privado, mas o Pages é público.** Apenas os arquivos copiados explicitamente na workflow `../.github/workflows/pages.yml` poderão entrar no Pages. Nunca publicar consultas proprietárias, saldos ou dados sensíveis na camada pública sem avaliação e autorização; segredos e credenciais não devem ser armazenados no GitHub.
 
-**Habilitar GitHub Pages não torna privado o código JavaScript.** Para hospedar regras financeiras privadamente, considere uma infraestrutura autenticada sob controle da empresa, ou mover a lógica para camada de execução dentro do Sankhya.
+O formato esperado do site é `https://willdarkmode.github.io/dm-telas/fluxo-caixa-diretoria/`, após ativação de GitHub Actions em Settings → Pages.
 
-## Atualizações
+## Atualização no Sankhya
 
-- CSS/JS externos: versionamento aqui, atualização sem reimportar ZIP do gadget.
-- JSP de entrada / estrutura XML: gerar um ZIP com `principal.jsp` e importar manualmente no **465**.
-- Toda alteração funcional depende de homologação no Sankhya.
+- Alterações de CSS/JS aprovado: commit + publicação Pages.
+- Alteração no JSP/XML: novo ZIP do JSP e importação manual somente no gadget 465.
+- Homologação dos totais financeiros com o gadget 380 antes de substituição.
