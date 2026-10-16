@@ -23,7 +23,7 @@ Inspirada em `willdarkmode/DM-Dashboard`:
 
 ## Estado
 
-**Base inicial em desenvolvimento, ainda não homologada.** O Pages publica por enquanto apenas uma página de referência e CSS, sem SQL financeiro. O JSP de demonstração `principal.jsp.template` não é uma versão pronta para implantação.
+**Integração HTML5 v0.2.0 preparada, ainda não homologada.** O Pages publica CSS e `js/app.js`, com menu para sete seções, leitura de empresas e contagem técnica limitada de títulos abertos. Não são os indicadores financeiros oficiais. O arquivo antigo `principal.jsp.template` é apenas referência histórica; o JSP de instalação v0.2.0 foi entregue em ZIP na conversa.
 
 A equivalência dos 26 SQLs originais, das regras, dos detalhamentos e da abertura nativa da Movimentação Financeira ainda precisa de validação. O erro HTTP 500 da primeira portabilidade não foi esclarecido por logs.
 
@@ -38,3 +38,18 @@ O formato esperado do site é `https://willdarkmode.github.io/dm-telas/fluxo-cai
 - Alterações de CSS/JS aprovado: commit + publicação Pages.
 - Alteração no JSP/XML: novo ZIP do JSP e importação manual somente no gadget 465.
 - Homologação dos totais financeiros com o gadget 380 antes de substituição.
+
+## Integração inicial v0.2.0 — instruções
+
+1. Em [Actions](https://github.com/willdarkmode/dm-telas/actions), confirmar a execução bem-sucedida do workflow de Pages após os commits.
+2. Confirmar acesso público aos recursos:
+   - https://willdarkmode.github.io/dm-telas/fluxo-caixa-diretoria/css/dashboard.css?v=0.2.0
+   - https://willdarkmode.github.io/dm-telas/fluxo-caixa-diretoria/js/app.js?v=0.2.0
+3. Fazer backup do gadget de **testes 465**, mantendo `entryPoint="principal.jsp"`.
+4. Importar apenas o ZIP atualizado do JSP entregue na conversa (contém apenas `principal.jsp`, aproximadamente 1 KB).
+5. Validar interface, carregamento da lista de empresas via `executeQuery()` e contagem técnica de títulos não baixados na janela de vencimento dos últimos 100 dias.
+6. Reportar qualquer HTTP 500 do próprio JSP com trecho relevante do log de aplicação. Não alterar o 380.
+
+**A URL do Pages ainda não pôde ser confirmada como publicamente acessível a partir do ambiente de preparação.** A publicação só estará efetiva após o GitHub Actions finalizar com sucesso.
+
+A consulta técnica de contagem **não substitui as 26 SQLs originais**. As sete seções originais permanecem planejadas, e nenhum saldo/valor financeiro foi publicado como resultado no Pages.
