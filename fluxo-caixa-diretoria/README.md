@@ -1,6 +1,6 @@
 # Fluxo de Caixa — Diretoria
 
-Projeto privado de portabilidade do gadget Sankhya **380** para HTML5, em testes no gadget **465**.
+Projeto público de portabilidade do gadget Sankhya **380** para HTML5, em testes no gadget **465**.
 
 ## Arquitetura proposta
 
@@ -29,7 +29,7 @@ A equivalência dos 26 SQLs originais, das regras, dos detalhamentos e da abertu
 
 ## Segurança e Pages
 
-**O repositório é privado, mas o Pages é público.** Apenas os arquivos copiados explicitamente na workflow `../.github/workflows/pages.yml` poderão entrar no Pages. Nunca publicar consultas proprietárias, saldos ou dados sensíveis na camada pública sem avaliação e autorização; segredos e credenciais não devem ser armazenados no GitHub.
+**O repositório e o Pages são públicos.** Apenas os arquivos copiados explicitamente na workflow `../.github/workflows/pages.yml` poderão entrar no Pages. Nunca publicar consultas proprietárias, saldos ou dados sensíveis na camada pública sem avaliação e autorização; segredos e credenciais não devem ser armazenados no GitHub.
 
 O formato esperado do site é `https://willdarkmode.github.io/dm-telas/fluxo-caixa-diretoria/`, após ativação de GitHub Actions em Settings → Pages.
 
