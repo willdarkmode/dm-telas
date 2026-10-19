@@ -61,3 +61,13 @@ A v0.3.1–0.3.3 apresentou objeto `{c,b}` no callback de `executeQuery()`, incl
 Arquivos de interface versionados: `js/app.js` (ponte), `js/financeiro.js` (indicadores), `css/dashboard.css`, `css/financeiro.css`. SQL financeiro original permanece no JSP distribuído por ZIP para homologação no **465**, não no Pages público. O workflow do Pages publica apenas arquivos explicitamente listados.
 
 Antes de importar o ZIP v0.3.4, aguardar conclusão do workflow GitHub Actions e verificar `js/app.js`, `js/financeiro.js` e `css/financeiro.css` nas URLs públicas. **Ainda não foi homologado em execução real no Sankhya**; indicadores e gráfico devem ser comparados ao gadget 380.
+
+## Versão v0.4.0 — Principal ampliada (19/10/2026)
+
+A base comprovada da v0.3.4 foi mantida: `principal.jsp` como entry point, `<snk:load/>` e `js/app.js` como ponte única `executeQuery()`. A publicação do GitHub Pages não contém SQL de negócio.
+
+Novidades: `js/principal-extras.js` e `css/principal-extras.css`; cartões com posição das contas, faturamento/meta anual e valor de estoque, além de projeção de 100 dias com três séries. As consultas originais adicionais (`svl_22D`, `svl_8UZ`, `svl_8QN`, `svl_11E`) ficam **somente no ZIP JSP** disponibilizado na conversa para importar no gadget 465.
+
+**Ressalvas da regra original:** saldos das contas e faturamento/meta não usam `CODEMP`; não devem ser apresentados como filtrados. O total bancário original soma quatro contas e não inclui espécie nem cheques. A query bancária teve removido apenas um `ORDER BY` redundante sobre agregado. O bloco de investimentos do XML original exibia valores de placeholder; por isso continua sem saldo. Estoque permanece dependente de `CODEMP` e dos custos originais.
+
+Status: GitHub Actions publicou os módulos em 19/10/2026 e os scripts passaram no `node --check`; **a execução e os valores v0.4.0 no gadget 465 ainda não foram homologados**. Confrontar cada quadro com a referência oficial 380 e ter cautela com consultas pesadas.
