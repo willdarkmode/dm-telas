@@ -112,3 +112,13 @@ As sete seções originais agora têm interfaces HTML5 implementadas. Esta vers�
 O ZIP v0.7.0 preserva sem alteração os **18 SQLs da v0.6.0**, acrescentando quatro novos (`grd_20V`, `cht_20W`, `grd_464`, `cht_465`): **22 consultas**. A publicação do Pages passou com sucesso pelo workflow [39258115415](https://github.com/willdarkmode/dm-telas/actions/runs/39258115415) com validação de sintaxe JS.
 
 **Status:** o usuário confirmou o carregamento funcional de Centros de Custo e Salários CC na v0.6.0; a v0.7.0 e seus números mensais ainda exigem teste no gadget 465. Nenhuma modificação foi realizada no gadget 380 ou dashboard 226. O detalhamento de salários permanece sujeito à ressalva original de ausência do filtro `CODEMP`, e a abertura nativa de `NUFIN` segue pendente.
+
+## Evidência de testes visuais — v0.7.0 (19/10/2026)
+
+O responsável enviou capturas da execução das telas **Receitas por mês** e **Despesas por mês** no gadget de homologação **465**. Ambas apresentaram: cabeçalho, filtro de empresas, seleção de mês, dois indicadores de baixa, gráfico comparativo receitas × despesas e grade por natureza (com centro de custo no caso de despesas), sem erro visível de carregamento.
+
+**Status atualizado:** sete seções com carregamento e navegação demonstrados nas capturas das versões 0.3–0.7. **Não significa paridade financeira homologada.** Continuam pendentes: comparar valores e critérios de cada consulta ao gadget original 380 nas mesmas empresas e datas; testar a interação `Ver 12 meses`; verificar paginação/filtros de todas as grades; implementar e homologar abertura da Movimentação Financeira pelo `NUFIN`.
+
+O XML original inclui a ação nativa `<on-click-launcher resource-id="br.com.sankhya.fin.cad.movimentacaoFinanceira"><NUFIN>$NUFIN</NUFIN></on-click-launcher>` nas grades de títulos `grd_0LW` e `grd_06I`. Essa é a referência semântica para a futura navegação HTML5; **não assumir** a assinatura da API JavaScript sem validação no Sankhya.
+
+**Segurança:** não incluir saldos bancários, títulos, nomes de colaboradores ou detalhes financeiros das capturas neste repositório público. O código de visualização público deve permanecer sem SQL sensível ou credenciais.
