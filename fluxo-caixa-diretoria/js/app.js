@@ -1,15 +1,15 @@
-/* GoldenGear Fluxo de Caixa — inicialização Pages v0.6.0.
+/* GoldenGear Fluxo de Caixa — inicialização Pages v0.7.0.
    Interface pública; as consultas financeiras originais ficam no JSP do Sankhya. */
 (function () {
   "use strict";
   const pages = [
     {id:"078", title:"Principal", subtitle:"Posição financeira e projeção até 100 dias"},
-    {id:"056", title:"Centros de Custo", subtitle:"Módulo em portabilidade"},
-    {id:"20P", title:"Receitas por mês", subtitle:"Módulo em portabilidade"},
-    {id:"41W", title:"Despesas por mês", subtitle:"Módulo em portabilidade"},
-    {id:"0E8", title:"Salários CC", subtitle:"Módulo em portabilidade"},
-    {id:"20O", title:"Receitas Pendentes", subtitle:"Módulo em portabilidade"},
-    {id:"06B", title:"Despesas Pendentes", subtitle:"Módulo em portabilidade"}
+    {id:"056", title:"Centros de Custo", subtitle:"Ranking e detalhamento de despesas por centro • 2025"},
+    {id:"20P", title:"Receitas por mês", subtitle:"Baixas de receitas e despesas • janeiro a dezembro de 2025"},
+    {id:"41W", title:"Despesas por mês", subtitle:"Baixas por natureza e centro de custo • 2025"},
+    {id:"0E8", title:"Salários CC", subtitle:"Despesas salariais por centro e parceiro • 2025"},
+    {id:"20O", title:"Receitas Pendentes", subtitle:"Títulos a receber por período"},
+    {id:"06B", title:"Despesas Pendentes", subtitle:"Títulos a pagar por período"}
   ];
   const root = document.getElementById("gg-fc-app");
   if (!root) return;
@@ -33,7 +33,7 @@
     '<div class="gg-frame"><aside class="gg-side">'+
       '<div class="gg-brand"><span class="gg-mark">G</span><div><strong>GoldenGear</strong><small>GESTÃO FINANCEIRA</small></div></div>'+
       '<div class="gg-side-caption">FLUXO DE CAIXA</div><nav id="gg-menu" aria-label="Seções do painel"></nav>'+
-      '<div class="gg-side-bottom"><span class="gg-pulse"></span> HTML5 Pages · v0.6.0<br><small>Homologação no gadget 465</small></div>'+
+      '<div class="gg-side-bottom"><span class="gg-pulse"></span> HTML5 Pages · v0.7.0<br><small>Homologação no gadget 465</small></div>'+
     '</aside><main class="gg-main">'+
       '<header class="gg-head"><div><div class="gg-eyebrow">DIRETORIA / SANKHYA</div><h1 id="gg-title">Fluxo de Caixa — Diretoria</h1><p id="gg-subtitle"></p></div>'+
       '<button type="button" class="gg-refresh" id="gg-refresh">↻ Atualizar</button></header>'+
@@ -50,6 +50,10 @@
     byId("gg-title").textContent = page.id==="078" ? "Fluxo de Caixa — Diretoria" : page.title;
     byId("gg-subtitle").textContent=page.subtitle;
     if (page.id!=="078") {
+      if ((page.id==="20P" || page.id==="41W") && window.GGMensal) {
+        window.GGMensal.render(page.id,{container:byId("gg-body"),companies:state.companies,selected:state.selected,execute:query,setSelected:ids=>{state.selected=ids;}});
+        return;
+      }
       if ((page.id==="056" || page.id==="0E8") && window.GGCentros) {
         window.GGCentros.render(page.id,{container:byId("gg-body"),companies:state.companies,selected:state.selected,execute:query,setSelected:ids=>{state.selected=ids;}});
         return;
@@ -127,16 +131,22 @@
       const b=byId("gg-check");if(b)b.disabled=false;
     }
   }
+  function refreshActive() {
+    if ((state.page==="20P"||state.page==="41W") && window.GGMensal) { window.GGMensal.refresh(state.page); return; }
+    if ((state.page==="056"||state.page==="0E8") && window.GGCentros) { window.GGCentros.refresh(state.page); return; }
+    if ((state.page==="20O"||state.page==="06B") && window.GGPendentes) { window.GGPendentes.refresh(state.page); return; }
+    loadCompanies();
+  }
   root.addEventListener("click",event=>{
     const btn=event.target.closest("[data-page]");
     if (btn) { state.page=btn.dataset.page; render(); return; }
-    if (event.target.closest("#gg-refresh")) {loadCompanies();return;}
+    if (event.target.closest("#gg-refresh")) {refreshActive();return;}
     if (event.target.closest("#gg-check")) {
       const checkboxes=[...byId("gg-company-list").querySelectorAll('input[type="checkbox"]:checked')];
       state.selected=checkboxes.map(x=>Number(x.value)).filter(Number.isSafeInteger);
       financialCount();
     }
   });
-  window.GGFluxoCaixa={version:"0.6.0",openSection:id=>{state.page=id;render();},getCurrentPage:()=>state.page,reload:loadCompanies,runSQL:query,getCompanies:()=>state.companies.slice(),getSelected:()=>state.selected.slice()};
+  window.GGFluxoCaixa={version:"0.7.0",openSection:id=>{state.page=id;render();},getCurrentPage:()=>state.page,reload:loadCompanies,runSQL:query,getCompanies:()=>state.companies.slice(),getSelected:()=>state.selected.slice()};
   loadCompanies();
 })();
