@@ -67,6 +67,7 @@ function table(rows){
 }
 function paint(){
  if(!st.ctx)return;
+ if(window.GGFluxoCaixa && window.GGFluxoCaixa.getCurrentPage()!=="078")return;
  const rows=series(),err=st.errors.cht_1JA;
  st.ctx.container.innerHTML='<section class="gg-panel ggf-filter"><div><div class="gg-kicker">EMPRESAS SELECIONADAS</div><div class="ggf-companies">'+
  st.ctx.companies.map(c=>'<label class="gg-check"><input type="checkbox" class="ggf-company" value="'+Number(c.CODEMP)+'"'+(st.ctx.selected.includes(Number(c.CODEMP))?" checked":"")+'><span>'+esc(c.NOMEFANTASIA)+' <small>('+Number(c.CODEMP)+')</small></span></label>').join("")+
