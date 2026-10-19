@@ -1,0 +1,30 @@
+/* GoldenGear · Centros de Custo e Salarios CC · v0.6.0 */
+.gcc-intro{display:flex;justify-content:space-between;align-items:center;gap:16px;border-top:3px solid #0e8b7c;margin-bottom:16px}
+.gcc-intro h2{font-size:25px;margin:6px 0}.gcc-intro p{font-size:13px;color:#62788c;margin:5px 0}
+.gcc-filter{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:18px}
+.gcc-company-list{display:flex;gap:10px;flex-wrap:wrap;margin-top:11px}
+.gcc-filter .gg-check{font-size:12px}.gcc-columns{display:grid;grid-template-columns:minmax(350px,40%) minmax(470px,1fr);gap:16px;align-items:start}
+.gcc-columns>.gg-panel{min-width:0}.gcc-panel-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;border-bottom:1px solid #e8edf2;padding-bottom:14px}
+.gcc-panel-heading h3,.gcc-detail h3{margin:0 0 7px;font-size:18px}.gcc-panel-heading p,.gcc-detail>p{font-size:12px;color:#718496;margin:2px 0}
+.gcc-total{white-space:nowrap;font-size:16px;color:#0e7b6e;margin-top:4px}
+.gcc-ranking-list{max-height:670px;overflow-y:auto;margin-top:10px}
+.gcc-rank{display:block;width:100%;border:1px solid transparent;border-bottom:1px solid #e7edf2;padding:12px 8px;border-radius:6px;background:transparent;text-align:left;cursor:pointer;color:#243b4b}
+.gcc-rank:hover{background:#f5faf9}.gcc-rank.is-active{border-color:#a9d9d0;background:#eaf8f4}
+.gcc-rank-row{display:flex;align-items:center;justify-content:space-between;gap:14px;font-size:12px}.gcc-rank-row strong{font-weight:650}.gcc-rank-row b{white-space:nowrap;font-weight:750}
+.gcc-track{display:block;height:7px;margin-top:8px;overflow:hidden;border-radius:10px;background:#e9eef3}.gcc-track i{display:block;height:100%;background:#0d9383;border-radius:10px}
+.gcc-detail h4{font-size:14px;margin:20px 0 10px}.gcc-nature-item{padding:9px 0;border-bottom:1px solid #eff2f5}
+.gcc-nature-item>div:first-child{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:12px}.gcc-nature-item strong{white-space:nowrap}
+.gcc-table-scroll{width:100%;max-height:610px;overflow:auto}
+.gcc-table{border-collapse:collapse;width:100%;min-width:440px;font-size:12px;font-variant-numeric:tabular-nums}
+.gcc-table th,.gcc-table td{padding:11px 9px;text-align:right;border-bottom:1px solid #e6ecf2;white-space:nowrap}
+.gcc-table th:first-child,.gcc-table td:first-child{text-align:left}
+.gcc-table thead th{position:sticky;top:0;background:#eef4f7;z-index:1;color:#476075}
+.gcc-table tbody tr:hover{background:#f5faf9}
+.gcc-salary{min-width:1650px}.gcc-salary th:first-child{position:sticky;left:0;background:#f5f8fa;z-index:2}.gcc-salary td:last-child{font-weight:700;background:#f6faf9}
+.gcc-empty{border:1px dashed #dbe7eb;padding:22px;border-radius:9px;color:#657d8f}
+.gcc-alert{background:#fff7e9;border:1px solid #f3ddb3;color:#765322;padding:12px 14px;margin:18px 0;font-size:12px;border-radius:8px;line-height:1.5}
+.gcc-error{color:#a72f2e!important;font-size:12px;overflow-wrap:anywhere}
+.gcc-muted,.gcc-footer{color:#698194!important;font-size:12px;line-height:1.5}.gcc-footer{margin:21px 0}
+.gcc-pager{display:flex;justify-content:flex-end;align-items:center;gap:11px;margin-top:14px;font-size:12px;color:#607789}
+.gcc-pager button{border:1px solid #d4e3e7;background:#f4f8fa;color:#16766c;padding:8px 12px;border-radius:7px;cursor:pointer}.gcc-pager button:disabled{opacity:.4;cursor:not-allowed}
+@media(max-width:1240px){.gcc-columns{grid-template-columns:1fr}.gcc-ranking-list{max-height:390px}}@media(max-width:650px){.gcc-intro,.gcc-panel-heading{flex-direction:column;align-items:flex-start}.gcc-columns{grid-template-columns:minmax(0,1fr)}}
