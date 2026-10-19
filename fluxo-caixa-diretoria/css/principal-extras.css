@@ -1,0 +1,23 @@
+/* Complementos financeiros v0.4.0 — não contém dados bancários */
+.gge-section-head{margin:30px 0 14px}.gge-section-head h2{font-size:22px;margin:5px 0}.gge-section-head p{color:#607589;font-size:13px;margin:4px 0}
+.gge-top-grid,.gge-bottom-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin:0 0 15px}
+.gge-bank,.gge-commercial,.gge-inventory,.gge-investments{min-width:0;border-top:3px solid #bcd1dc}
+.gge-bank{border-top-color:#0a8c80}.gge-commercial{border-top-color:#357ca6}.gge-inventory{border-top-color:#9b87c8}
+.gge-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.gge-top-grid h3,.gge-bottom-grid h3{margin:9px 0 12px;font-size:18px}
+.gge-context{font-size:11px;color:#798da0;text-align:right}
+.gge-big{display:block;color:#23374b;font-size:clamp(23px,2.2vw,30px);font-weight:800;margin:10px 0;overflow-wrap:anywhere}
+.gge-muted{font-size:12px;color:#738396;line-height:1.5;margin:9px 0}
+.gge-bank-list{display:grid;grid-template-columns:1fr 1fr;gap:0 22px;margin:16px 0}
+.gge-bank-list>div{border-bottom:1px solid #e7edf1;display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:12px;padding:9px 0}
+.gge-bank-list>div span{color:#5e7488}.gge-bank-list strong{font-size:13px;white-space:nowrap}
+.gge-kpis{display:flex;justify-content:space-between;gap:15px;margin:18px 0}
+.gge-kpis>span{display:flex;flex-direction:column;gap:5px;color:#687f90;font-size:12px}.gge-kpis b{color:#253f55;font-size:17px}
+.gge-progress{height:9px;border-radius:9px;background:#e7eef5;overflow:hidden;margin-top:12px}
+.gge-progress>div{background:#148e82;height:100%;border-radius:9px}
+.gge-warning{margin-top:14px;padding:10px 12px;background:#f2f7fa;color:#5b6d7f;border-radius:7px;font-size:11px}
+.gge-error{font-size:12px;color:#a82e2c;overflow-wrap:anywhere}
+.ggf-legend{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:18px;margin:5px 4px 15px;font-size:12px;color:#516579}
+.ggf-legend span{display:flex;align-items:center;gap:7px}.ggf-legend i{display:inline-block;width:20px;height:4px;border-radius:9px}
+@media(max-width:1000px){.gge-top-grid,.gge-bottom-grid{grid-template-columns:1fr}}
+@media(max-width:560px){.gge-bank-list{grid-template-columns:1fr}.gge-kpis{flex-wrap:wrap}.gge-card-head{display:block}.gge-context{text-align:left}}
