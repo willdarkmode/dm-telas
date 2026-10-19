@@ -33,8 +33,8 @@
   return sql.replace(/;\s*$/,"").trim();
  }
  function paginate(sql,page,size){
-  const from=(page-1)*size,to=page*size;
-  return "SELECT * FROM (SELECT Z.*, ROWNUM GG_RN FROM ("+sql+") Z WHERE ROWNUM <= "+to+") WHERE GG_RN > "+from+" ORDER BY GG_RN";
+  const from=(page-1)*size;
+  return sql+" OFFSET "+from+" ROWS FETCH NEXT "+size+" ROWS ONLY";
  }
  function isShown(page){
   const app=window.GGFluxoCaixa;
