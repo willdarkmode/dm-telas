@@ -1,4 +1,4 @@
-/* GoldenGear Fluxo de Caixa — inicialização Pages v0.4.0.
+/* GoldenGear Fluxo de Caixa — inicialização Pages v0.5.0.
    Interface pública; as consultas financeiras originais ficam no JSP do Sankhya. */
 (function () {
   "use strict";
@@ -33,7 +33,7 @@
     '<div class="gg-frame"><aside class="gg-side">'+
       '<div class="gg-brand"><span class="gg-mark">G</span><div><strong>GoldenGear</strong><small>GESTÃO FINANCEIRA</small></div></div>'+
       '<div class="gg-side-caption">FLUXO DE CAIXA</div><nav id="gg-menu" aria-label="Seções do painel"></nav>'+
-      '<div class="gg-side-bottom"><span class="gg-pulse"></span> HTML5 Pages · v0.4.0<br><small>Homologação no gadget 465</small></div>'+
+      '<div class="gg-side-bottom"><span class="gg-pulse"></span> HTML5 Pages · v0.5.0<br><small>Homologação no gadget 465</small></div>'+
     '</aside><main class="gg-main">'+
       '<header class="gg-head"><div><div class="gg-eyebrow">DIRETORIA / SANKHYA</div><h1 id="gg-title">Fluxo de Caixa — Diretoria</h1><p id="gg-subtitle"></p></div>'+
       '<button type="button" class="gg-refresh" id="gg-refresh">↻ Atualizar</button></header>'+
@@ -50,6 +50,10 @@
     byId("gg-title").textContent = page.id==="078" ? "Fluxo de Caixa — Diretoria" : page.title;
     byId("gg-subtitle").textContent=page.subtitle;
     if (page.id!=="078") {
+      if ((page.id==="20O" || page.id==="06B") && window.GGPendentes) {
+        window.GGPendentes.render(page.id,{container:byId("gg-body"),companies:state.companies,selected:state.selected,execute:query,setSelected:ids=>{state.selected=ids;}});
+        return;
+      }
       byId("gg-body").innerHTML='<section class="gg-panel"><div class="gg-kicker">SEÇÃO ORIGINAL · '+escapeHtml(page.id)+'</div><h2>'+escapeHtml(page.title)+'</h2><p>Esta seção está preparada na navegação HTML5. As consultas e o detalhamento financeiro serão migrados na etapa de homologação com o gadget 380.</p></section>';
       return;
     }
@@ -81,7 +85,8 @@
       state.companies=(rows||[]).map(x=>({CODEMP:Number(x.CODEMP),NOMEFANTASIA:String(x.NOMEFANTASIA||"Empresa")})).filter(c=>Number.isSafeInteger(c.CODEMP)&&c.CODEMP>0);
       if (!state.companies.length) throw new Error("Nenhuma empresa retornada.");
       const preferred=state.companies.filter(c=>[1,2,3].includes(c.CODEMP));
-      state.selected=(preferred.length?preferred:state.companies).map(c=>c.CODEMP);
+      const initial=(preferred.length?preferred:state.companies).map(c=>c.CODEMP);
+      state.selected=state.selected.length ? state.selected.filter(x=>state.companies.some(c=>c.CODEMP===x)) : initial;
       state.connection="Conectado";
       render();
       if (window.GGFinancePrincipal) await window.GGFinancePrincipal.load();
@@ -126,6 +131,6 @@
       financialCount();
     }
   });
-  window.GGFluxoCaixa={version:"0.2.1",openSection:id=>{state.page=id;render();},reload:loadCompanies,runSQL:query,getCompanies:()=>state.companies.slice(),getSelected:()=>state.selected.slice()};
+  window.GGFluxoCaixa={version:"0.5.0",openSection:id=>{state.page=id;render();},getCurrentPage:()=>state.page,reload:loadCompanies,runSQL:query,getCompanies:()=>state.companies.slice(),getSelected:()=>state.selected.slice()};
   loadCompanies();
 })();
