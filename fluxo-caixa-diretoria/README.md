@@ -104,7 +104,7 @@ As sete seções originais agora têm interfaces HTML5 implementadas. Esta vers�
 
 - **Receitas por mês (20P):** gráfico `cht_20W`, grade `grd_20V` por natureza e mês (janeiro a dezembro de 2025).
 - **Despesas por mês (41W):** gráfico `cht_465`, grade `grd_464` por natureza, centro de custo e mês (janeiro a dezembro de 2025).
-- Nova interface de gráfico de duas séries (receitas/despesas), seleção de mês, cards mensais, pesquisa e paginação de 50 linhas na tela. Dados vêm do `executeQuery()` do app validado, sem mudar a ponte SQL.
+- Nova interface de gráfico de duas séries (receitas/despesas, inclusive valores negativos), seleção de mês, cards mensais, pesquisa, opção **Ver 12 meses** na grade, atalho para Pendentes e paginação de 50 linhas na tela. Dados vêm do `executeQuery()` do app validado, sem mudar a ponte SQL.
 - `js/mensal.js` e `css/mensal.css` servidos pelo GitHub Pages; SQL de negócio mantido no ZIP do componente instalado no gadget 465.
 
 **Detalhes de equivalência:** os dois gráficos compartilham exatamente o mesmo SQL no XML 380. As grades e o gráfico mantêm listas de exclusões TOP/natureza próprias; diferenças entre total da grade e do gráfico podem ocorrer por essas regras, e devem ser conferidas antes de alterar qualquer cálculo. O ano 2025 e as datas Oracle continuam fixos. A grade de receitas não tinha uma coluna SQL `TOTAL`; o total anual exibido na interface resulta da soma de suas 12 colunas, enquanto o total da grade de despesas vem da SQL original.
