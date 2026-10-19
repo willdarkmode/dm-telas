@@ -81,3 +81,19 @@ Publicados no Pages: `js/pendentes.js`, `css/pendentes.css` e uma atualização 
 Cuidado: o agrupamento do XML original mistura 2025 consolidado e os meses de 2025; não somar períodos sobrepostos. O `NUFIN` é exibido para rastreabilidade, mas o launcher nativo de Movimentação Financeira **ainda não foi convertido** para HTML5. Não há alterações no gadget 380 nem no dashboard 226.
 
 Status: [GitHub Actions publicado](https://github.com/willdarkmode/dm-telas/actions/runs/39251337818) com checagem de sintaxe bem-sucedida; os novos relatórios ainda dependem do teste funcional e da conferência de valores no gadget 465. O HTML5 v0.5.0 só estará disponível após o ZIP atualizado ser importado no Sankhya.
+
+## Versão v0.6.0 — Centros de Custo e Salários CC (19/10/2026)
+
+Nova interface em `js/centros.js` e `css/centros.css`; a configuração principal do Sankhya permanece um único JSP com `<snk:load/>` e a ponte externa `executeQuery()`.
+
+**Centros de Custo (056):** ranking 2025 (consulta `cht_0RO`), seleção do centro, naturezas de despesa (`cht_05K`) e parceiros (`grd_09D`). A pizza original é apresentada como barras comparativas, com a mesma origem SQL.
+
+**Salários CC (0E8):** ranking 2025 por centro (`cht_0IL`) e tabela mensal por parceiro, janeiro a dezembro, com total (`grd_2OZ`). Paginação de 50 parceiros por vez via `OFFSET ... FETCH NEXT`, recurso previamente validado no Oracle do Sankhya.
+
+**Ressalva de filtro e acesso:** `cht_0IL` usa `:CODEMP`, mas **`grd_2OZ` não contém `:CODEMP`** na consulta original. O detalhamento pode incluir empresas além das selecionadas. Não dar acesso ao painel salarial a usuários sem autorização. Na migração mantivemos essa regra literalmente para fins de comparação com o 380; a empresa deve homologar a correção ou não dessa divergência.
+
+O JSP da v0.6.0 contém **18 consultas**, sendo 13 idênticas à v0.5.0 e cinco novas, extraídas do XML oficial do 380. SQL financeiro não foi publicado no Pages. Os módulos CSS/JS passam por `node --check` no GitHub Actions.
+
+GitHub Actions: [publicação da v0.6.0](https://github.com/willdarkmode/dm-telas/actions/runs/39255276521) concluída com sucesso. O Sankhya 465 ainda requer importação do ZIP JSP e homologação dos resultados; o gadget 380 e dashboard 226 não foram alterados.
+
+Restantes: Receitas por mês, Despesas por mês e integração do detalhamento por NUFIN.
