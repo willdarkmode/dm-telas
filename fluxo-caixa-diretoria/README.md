@@ -97,3 +97,18 @@ O JSP da v0.6.0 contém **18 consultas**, sendo 13 idênticas à v0.5.0 e cinco 
 GitHub Actions: [publicação da v0.6.0](https://github.com/willdarkmode/dm-telas/actions/runs/39255276521) concluída com sucesso. O Sankhya 465 ainda requer importação do ZIP JSP e homologação dos resultados; o gadget 380 e dashboard 226 não foram alterados.
 
 Restantes: Receitas por mês, Despesas por mês e integração do detalhamento por NUFIN.
+
+## v0.7.0 — Receitas por mês e Despesas por mês (19/10/2026)
+
+As sete seções originais agora têm interfaces HTML5 implementadas. Esta versão acrescenta:
+
+- **Receitas por mês (20P):** gráfico `cht_20W`, grade `grd_20V` por natureza e mês (janeiro a dezembro de 2025).
+- **Despesas por mês (41W):** gráfico `cht_465`, grade `grd_464` por natureza, centro de custo e mês (janeiro a dezembro de 2025).
+- Nova interface de gráfico de duas séries (receitas/despesas), seleção de mês, cards mensais, pesquisa e paginação de 50 linhas na tela. Dados vêm do `executeQuery()` do app validado, sem mudar a ponte SQL.
+- `js/mensal.js` e `css/mensal.css` servidos pelo GitHub Pages; SQL de negócio mantido no ZIP do componente instalado no gadget 465.
+
+**Detalhes de equivalência:** os dois gráficos compartilham exatamente o mesmo SQL no XML 380. As grades e o gráfico mantêm listas de exclusões TOP/natureza próprias; diferenças entre total da grade e do gráfico podem ocorrer por essas regras, e devem ser conferidas antes de alterar qualquer cálculo. O ano 2025 e as datas Oracle continuam fixos. A grade de receitas não tinha uma coluna SQL `TOTAL`; o total anual exibido na interface resulta da soma de suas 12 colunas, enquanto o total da grade de despesas vem da SQL original.
+
+O ZIP v0.7.0 preserva sem alteração os **18 SQLs da v0.6.0**, acrescentando quatro novos (`grd_20V`, `cht_20W`, `grd_464`, `cht_465`): **22 consultas**. A publicação do Pages passou com sucesso pelo workflow [39258115415](https://github.com/willdarkmode/dm-telas/actions/runs/39258115415) com validação de sintaxe JS.
+
+**Status:** o usuário confirmou o carregamento funcional de Centros de Custo e Salários CC na v0.6.0; a v0.7.0 e seus números mensais ainda exigem teste no gadget 465. Nenhuma modificação foi realizada no gadget 380 ou dashboard 226. O detalhamento de salários permanece sujeito à ressalva original de ausência do filtro `CODEMP`, e a abertura nativa de `NUFIN` segue pendente.
