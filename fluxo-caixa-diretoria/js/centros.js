@@ -125,7 +125,7 @@ async function loadDetail(page,target){
  const ctx=contexts[page],st=state(page),rule=RULES[page];
  if(!ctx||st.selected<0||!st.list[st.selected])return;
  const name=String(st.list[st.selected].DESCRCENCUS),token=++st.detailToken;
- st.detailLoading=true;st.detailError="";st.natures=[];st.partners=[];paint(page);
+ st.detailLoading=true;st.detailError="";if(target===1)st.natures=[];st.partners=[];paint(page);
  try{
   // A query por natureza e a grade de parceiros sao independentes,
   // mas evitamos consultar mais de uma grade pesada de cada vez.
