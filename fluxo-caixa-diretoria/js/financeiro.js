@@ -38,13 +38,27 @@ function series(){
 }
 function plot(rows){
  if(!rows.length)return '<p class="ggf-muted">Nenhum período retornado pela consulta.</p>';
- const vals=rows.map(r=>field(r,"Saldo_Acumulado")),lo=Math.min(0,...vals),hi=Math.max(0,...vals);
- const X=i=>70+(820*i/Math.max(1,rows.length-1)),Y=v=>22+(hi-v)/(hi-lo||1)*176;
- const ticks=[0,.25,.5,.75,1].map(t=>{const v=lo+(hi-lo)*t,y=Y(v);return '<line x1="70" y1="'+y+'" x2="890" y2="'+y+'" stroke="#e3eaf0"/><text x="61" y="'+(y+4)+'" text-anchor="end" font-size="11" fill="#687c8e">'+esc((v/1000).toLocaleString("pt-BR",{maximumFractionDigits:0}))+' mil</text>';}).join("");
- const points=vals.map((v,i)=>X(i)+","+Y(v)).join(" ");
- return '<div class="ggf-chart"><svg viewBox="0 0 920 250" role="img" aria-label="Saldo projetado acumulado até 100 dias">'+ticks+
- '<polyline points="'+points+'" stroke="#0b8e7e" stroke-width="3" fill="none"/>'+
- rows.map((r,i)=>'<circle cx="'+X(i)+'" cy="'+Y(vals[i])+'" r="4" fill="#099d8c"><title>'+esc(r.PERIODO)+": "+esc(money(vals[i]))+'</title></circle><text x="'+X(i)+'" y="237" text-anchor="middle" font-size="11" fill="#687c8e">'+esc(String(r.PERIODO).replace(" dias","d"))+'</text>').join("")+'</svg></div>';
+ const traces=[
+  {key:"AReceber_Acumulado",label:"A receber",color:"#0b9780"},
+  {key:"APagar_Acumulado",label:"A pagar",color:"#d66378"},
+  {key:"Saldo_Acumulado",label:"Saldo projetado",color:"#2d659a"}
+ ];
+ const all=traces.flatMap(t=>rows.map(r=>field(r,t.key)));
+ const lo=Math.min(0,...all),hi=Math.max(0,...all);
+ const X=i=>70+820*i/Math.max(1,rows.length-1),Y=v=>22+(hi-v)/(hi-lo||1)*176;
+ const ticks=[0,.25,.5,.75,1].map(t=>{
+   const v=lo+(hi-lo)*t,y=Y(v);
+   return '<line x1="70" y1="'+y+'" x2="890" y2="'+y+'" stroke="#e3eaf0"/>'+
+   '<text x="61" y="'+(y+4)+'" text-anchor="end" font-size="11" fill="#687c8e">'+esc((v/1000).toLocaleString("pt-BR",{maximumFractionDigits:0}))+' mil</text>';
+ }).join("");
+ const lines=traces.map(t=>{
+   const points=rows.map((r,i)=>X(i)+","+Y(field(r,t.key))).join(" ");
+   return '<polyline points="'+points+'" stroke="'+t.color+'" stroke-width="'+(t.key==="Saldo_Acumulado"?3.5:2.5)+'" fill="none" stroke-linejoin="round"/>'+
+    rows.map((r,i)=>'<circle cx="'+X(i)+'" cy="'+Y(field(r,t.key))+'" r="'+(t.key==="Saldo_Acumulado"?4:2.5)+'" fill="'+t.color+'"><title>'+esc(t.label+' · '+r.PERIODO)+': '+esc(money(field(r,t.key)))+'</title></circle>').join("");
+ }).join("");
+ const labels=rows.map((r,i)=>'<text x="'+X(i)+'" y="237" text-anchor="middle" font-size="11" fill="#687c8e">'+esc(String(r.PERIODO).replace(" dias","d"))+'</text>').join("");
+ const legend='<div class="ggf-legend">'+traces.map(t=>'<span><i style="background:'+t.color+'"></i>'+t.label+'</span>').join("")+'</div>';
+ return legend+'<div class="ggf-chart"><svg viewBox="0 0 920 250" role="img" aria-label="Três séries acumuladas: a receber, a pagar e saldo projetado até 100 dias">'+ticks+lines+labels+'</svg></div>';
 }
 function table(rows){
  if(!rows.length)return "";
@@ -62,6 +76,7 @@ function paint(){
  '<div class="ggf-heading"><div class="gg-kicker">FLUXO ACUMULADO · 100 DIAS</div><h2>Projeção financeira</h2><p>Sem saldo inicial das contas bancárias.</p></div>'+
  '<section class="gg-panel">'+(err?'<p class="ggf-error">'+esc(err)+'</p>':st.loading&&!st.rows.cht_1JA?'<p>Consultando projeção…</p>':plot(rows)+table(rows))+'</section>'+
  '<p class="ggf-status" role="status">'+(st.loading?'Consultando Sankhya…':'Homologação pendente: comparar os resultados com o gadget 380.')+'</p>';
+ if (window.GGPrincipalExtras && typeof window.GGPrincipalExtras.render === 'function') window.GGPrincipalExtras.render(st.ctx);
 }
 async function load(){
  if(!st.ctx||st.loading||!st.ctx.selected.length)return;
@@ -73,6 +88,7 @@ async function load(){
   paint();
  }
  st.loading=false;paint();
+ if (window.GGPrincipalExtras && typeof window.GGPrincipalExtras.load === "function") await window.GGPrincipalExtras.load(true);
 }
 function click(ev){
  if(!ev.target.closest("[data-ggf-apply]")||!st.ctx)return;
@@ -81,7 +97,7 @@ function click(ev){
  st.ctx.selected=selected;st.ctx.setSelected(selected);load();
 }
 window.GGFinancePrincipal={
- version:"0.3.4",
+ version:"0.4.0",
  render(args){st.ctx=args;if(st.root!==args.container){if(st.root)st.root.removeEventListener("click",click);st.root=args.container;st.root.addEventListener("click",click);}paint();},
  load
 };
