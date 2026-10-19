@@ -71,3 +71,13 @@ Novidades: `js/principal-extras.js` e `css/principal-extras.css`; cartões com p
 **Ressalvas da regra original:** saldos das contas e faturamento/meta não usam `CODEMP`; não devem ser apresentados como filtrados. O total bancário original soma quatro contas e não inclui espécie nem cheques. A query bancária teve removido apenas um `ORDER BY` redundante sobre agregado. O bloco de investimentos do XML original exibia valores de placeholder; por isso continua sem saldo. Estoque permanece dependente de `CODEMP` e dos custos originais.
 
 Status: GitHub Actions publicou os módulos em 19/10/2026 e os scripts passaram no `node --check`; **a execução e os valores v0.4.0 no gadget 465 ainda não foram homologados**. Confrontar cada quadro com a referência oficial 380 e ter cautela com consultas pesadas.
+
+## Versão v0.5.0 — Receitas e Despesas Pendentes (19/10/2026)
+
+As seções **Receitas Pendentes** (`20O`) e **Despesas Pendentes** (`06B`) agora têm navegação funcional em HTML5, resumo por período e detalhamento de títulos em páginas de 50 registros. Consultas extraídas do gadget 380: `grd_0LY`, `grd_0LW`, `grd_06J`, `grd_06I`, incluídas **somente** no ZIP JSP. Os nove SQLs da Principal v0.4.0 foram mantidos byte a byte.
+
+Publicados no Pages: `js/pendentes.js`, `css/pendentes.css` e uma atualização do `js/app.js`, preservando a mesma ponte `executeQuery` funcional da v0.3.4. `OFFSET ... FETCH NEXT 50 ROWS ONLY` foi testado em consulta de leitura na versão Oracle do ambiente, antes de ser aplicado à paginação de títulos.
+
+Cuidado: o agrupamento do XML original mistura 2025 consolidado e os meses de 2025; não somar períodos sobrepostos. O `NUFIN` é exibido para rastreabilidade, mas o launcher nativo de Movimentação Financeira **ainda não foi convertido** para HTML5. Não há alterações no gadget 380 nem no dashboard 226.
+
+Status: [GitHub Actions publicado](https://github.com/willdarkmode/dm-telas/actions/runs/39251337818) com checagem de sintaxe bem-sucedida; os novos relatórios ainda dependem do teste funcional e da conferência de valores no gadget 465. O HTML5 v0.5.0 só estará disponível após o ZIP atualizado ser importado no Sankhya.
