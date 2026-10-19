@@ -1,4 +1,4 @@
-/* GoldenGear Fluxo de Caixa — inicialização Pages v0.5.0.
+/* GoldenGear Fluxo de Caixa — inicialização Pages v0.6.0.
    Interface pública; as consultas financeiras originais ficam no JSP do Sankhya. */
 (function () {
   "use strict";
@@ -33,7 +33,7 @@
     '<div class="gg-frame"><aside class="gg-side">'+
       '<div class="gg-brand"><span class="gg-mark">G</span><div><strong>GoldenGear</strong><small>GESTÃO FINANCEIRA</small></div></div>'+
       '<div class="gg-side-caption">FLUXO DE CAIXA</div><nav id="gg-menu" aria-label="Seções do painel"></nav>'+
-      '<div class="gg-side-bottom"><span class="gg-pulse"></span> HTML5 Pages · v0.5.0<br><small>Homologação no gadget 465</small></div>'+
+      '<div class="gg-side-bottom"><span class="gg-pulse"></span> HTML5 Pages · v0.6.0<br><small>Homologação no gadget 465</small></div>'+
     '</aside><main class="gg-main">'+
       '<header class="gg-head"><div><div class="gg-eyebrow">DIRETORIA / SANKHYA</div><h1 id="gg-title">Fluxo de Caixa — Diretoria</h1><p id="gg-subtitle"></p></div>'+
       '<button type="button" class="gg-refresh" id="gg-refresh">↻ Atualizar</button></header>'+
@@ -50,6 +50,10 @@
     byId("gg-title").textContent = page.id==="078" ? "Fluxo de Caixa — Diretoria" : page.title;
     byId("gg-subtitle").textContent=page.subtitle;
     if (page.id!=="078") {
+      if ((page.id==="056" || page.id==="0E8") && window.GGCentros) {
+        window.GGCentros.render(page.id,{container:byId("gg-body"),companies:state.companies,selected:state.selected,execute:query,setSelected:ids=>{state.selected=ids;}});
+        return;
+      }
       if ((page.id==="20O" || page.id==="06B") && window.GGPendentes) {
         window.GGPendentes.render(page.id,{container:byId("gg-body"),companies:state.companies,selected:state.selected,execute:query,setSelected:ids=>{state.selected=ids;}});
         return;
@@ -131,6 +135,6 @@
       financialCount();
     }
   });
-  window.GGFluxoCaixa={version:"0.5.0",openSection:id=>{state.page=id;render();},getCurrentPage:()=>state.page,reload:loadCompanies,runSQL:query,getCompanies:()=>state.companies.slice(),getSelected:()=>state.selected.slice()};
+  window.GGFluxoCaixa={version:"0.6.0",openSection:id=>{state.page=id;render();},getCurrentPage:()=>state.page,reload:loadCompanies,runSQL:query,getCompanies:()=>state.companies.slice(),getSelected:()=>state.selected.slice()};
   loadCompanies();
 })();
