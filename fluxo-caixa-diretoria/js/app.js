@@ -93,8 +93,10 @@
       state.selected=state.selected.length ? state.selected.filter(x=>state.companies.some(c=>c.CODEMP===x)) : initial;
       state.connection="Conectado";
       render();
-      if (window.GGFinancePrincipal) await window.GGFinancePrincipal.load();
-      else await financialCount();
+      if (state.page==="078") {
+        if (window.GGFinancePrincipal) await window.GGFinancePrincipal.load();
+        else await financialCount();
+      }
     } catch(e) {
       state.connection="Falha na consulta";
       render();
