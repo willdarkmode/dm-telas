@@ -40,7 +40,7 @@
   const app=window.GGFluxoCaixa;
   return !app||typeof app.getCurrentPage!=="function"||app.getCurrentPage()===page;
  }
- function s(page){return store[page]||(store[page]={summary:[],details:[],period:"",pageNum:1,loading:false,detailLoading:false,error:"",detailError:"",hasMore:false,token:0,group:""});}
+ function s(page){return store[page]||(store[page]={summary:[],details:[],period:"",pageNum:1,loading:false,detailLoading:false,error:"",detailError:"",hasMore:false,token:0,detailToken:0,group:""});}
  function paint(page){
   const ctx=contexts[page],def=defs[page],st=s(page);if(!ctx||!isShown(page))return;
   const host=ctx.container; if(!host)return;
@@ -71,7 +71,7 @@
   const ctx=contexts[page],st=s(page);if(!ctx||st.loading)return;
   const key=(ctx.selected||[]).join(",");
   if(!force&&st.group===key&&st.summary.length){paint(page);return;}
-  const token=++st.token;st.group=key;st.summary=[];st.details=[];st.period="";st.error="";st.detailError="";st.pageNum=1;st.hasMore=false;st.loading=true;paint(page);
+  const token=++st.token;st.detailToken++;st.group=key;st.summary=[];st.details=[];st.period="";st.error="";st.detailError="";st.pageNum=1;st.hasMore=false;st.loading=true;paint(page);
   try{
    const rows=await ctx.execute(prepare(defs[page].sum,ctx));
    if(st.token!==token)return;
@@ -80,16 +80,18 @@
   finally{if(st.token===token){st.loading=false;paint(page);}}
  }
  async function loadDetails(page,targetPage){
-  const ctx=contexts[page],st=s(page);if(!ctx||st.detailLoading||!st.period)return;
+  const ctx=contexts[page],st=s(page);if(!ctx||!st.period)return;
+  const period=st.period,token=++st.detailToken;
   st.detailLoading=true;st.detailError="";paint(page);
   try{
-    const sql=paginate(prepare(defs[page].details,ctx,st.period),targetPage,50);
+    const sql=paginate(prepare(defs[page].details,ctx,period),targetPage,50);
     const rows=await ctx.execute(sql);
+    if(st.detailToken!==token||st.period!==period)return;
     st.details=Array.isArray(rows)?rows:[];st.pageNum=targetPage;st.hasMore=st.details.length===50;
-  }catch(e){st.detailError=String(e&&e.message||e);}
-  finally{st.detailLoading=false;paint(page);}
- }
- function handle(page,ev){
+  }catch(e){if(st.detailToken===token&&st.period===period)st.detailError=String(e&&e.message||e);}
+  finally{if(st.detailToken===token){st.detailLoading=false;paint(page);}}
+}
+function handle(page,ev){
   const ctx=contexts[page],st=s(page);if(!ctx)return;
   if(ev.target.closest("[data-pend-refresh]")){load(page,true);return;}
   if(ev.target.closest("[data-pend-apply]")){
