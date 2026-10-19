@@ -49,22 +49,24 @@ function selectedRows(page){
 }
 function monthBar(page){
  const st=state(page),c=CONFIG[page],vals=chartMonths(st.chart);
- const max=Math.max(1,...vals.flatMap(r=>[r.RECEITA,r.DESPESA].map(Math.abs)));
+ const numbers=vals.flatMap(r=>[r.RECEITA,r.DESPESA]);
+ const low=Math.min(0,...numbers),high=Math.max(0,...numbers);
  const plotTop=34,plotBottom=224,usable=plotBottom-plotTop;
- const group=79,bar=22,space=4,x=i=>62+group*i,y=v=>plotBottom-Math.abs(v)/max*usable;
- const lineBase=plotBottom;
+ const group=79,bar=22,space=4,x=i=>62+group*i;
+ const y=v=>plotBottom-(v-low)/(high-low||1)*usable;
+ const lineBase=y(0);
  const bars=vals.map((r,i)=>{
   const selected=st.month===i;const p1=c.primary,p2=p1==="RECEITA"?"DESPESA":"RECEITA";
   const a=r[p1],b=r[p2];
-  return '<g class="ggm-bar-group'+(selected?" is-active":"")+'"><rect x="'+x(i)+'" y="'+y(a)+'" width="'+bar+'" height="'+Math.max(0,lineBase-y(a))+'" rx="3" fill="'+c.accent+'">'+
+  return '<g class="ggm-bar-group'+(selected?" is-active":"")+'"><rect x="'+x(i)+'" y="'+Math.min(lineBase,y(a))+'" width="'+bar+'" height="'+Math.abs(lineBase-y(a))+'" rx="3" fill="'+c.accent+'">'+
    '<title>'+esc(MONTHS[i][1]+": "+(p1==="RECEITA"?"Receitas":"Despesas")+" "+money(a))+'</title></rect>'+
-   '<rect x="'+(x(i)+bar+space)+'" y="'+y(b)+'" width="'+bar+'" height="'+Math.max(0,lineBase-y(b))+'" rx="3" fill="'+c.secondary+'">'+
+   '<rect x="'+(x(i)+bar+space)+'" y="'+Math.min(lineBase,y(b))+'" width="'+bar+'" height="'+Math.abs(lineBase-y(b))+'" rx="3" fill="'+c.secondary+'">'+
    '<title>'+esc(MONTHS[i][1]+": "+(p2==="RECEITA"?"Receitas":"Despesas")+" "+money(b))+'</title></rect>'+
    '<text x="'+(x(i)+bar+space/2)+'" y="246" font-size="12" text-anchor="middle" fill="'+(selected?"#1a354b":"#678093")+'" font-weight="'+(selected?"700":"400")+'">'+MONTHS[i][0]+'</text>'+
    (selected?'<rect x="'+(x(i)-7)+'" y="22" width="62" height="237" fill="none" stroke="#8ab9b3" stroke-width="1.5" rx="7"/>':'')+'</g>';
  }).join("");
  const lines=[0,.25,.5,.75,1].map(p=>{
-  const yy=lineBase-p*usable,value=max*p;
+  const value=low+(high-low)*p,yy=y(value);
   return '<line x1="58" x2="1015" y1="'+yy+'" y2="'+yy+'" stroke="#e7eef3"/><text x="50" y="'+(yy+4)+'" font-size="11" text-anchor="end" fill="#718598">'+
    esc((value/1000000).toLocaleString("pt-BR",{maximumFractionDigits:1}))+' mi</text>';
  }).join("");
