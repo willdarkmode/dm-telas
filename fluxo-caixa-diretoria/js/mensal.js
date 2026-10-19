@@ -17,7 +17,7 @@ const ctx={},states={};
 const esc=v=>String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const money=v=>{const n=Number(v);return Number.isFinite(n)?n.toLocaleString("pt-BR",{style:"currency",currency:"BRL"}):"—";};
 const number=(r,k)=>{if(!r)return 0;const key=Object.keys(r).find(x=>x.toUpperCase()===k.toUpperCase());const n=Number(key?r[key]:0);return Number.isFinite(n)?n:0;};
-const state=page=>states[page]||(states[page]={key:null,chart:[],grid:[],month:0,needle:"",page:1,sort:"",loading:false,errorChart:"",errorGrid:"",token:0});
+const state=page=>states[page]||(states[page]={key:null,chart:[],grid:[],month:0,needle:"",page:1,sort:"",showYear:false,loading:false,errorChart:"",errorGrid:"",token:0});
 const current=page=>window.GGFluxoCaixa&&window.GGFluxoCaixa.getCurrentPage()===page;
 function companies(page){
  const c=ctx[page],chosen=c.selected.filter(n=>Number.isSafeInteger(n)&&n>0&&c.companies.some(x=>Number(x.CODEMP)===n));
@@ -49,6 +49,7 @@ function selectedRows(page){
 }
 function monthBar(page){
  const st=state(page),c=CONFIG[page],vals=chartMonths(st.chart);
+ if(!st.chart.length)return '<p class="ggm-hint">A consulta do gráfico não retornou meses neste período.</p>';
  const numbers=vals.flatMap(r=>[r.RECEITA,r.DESPESA]);
  const low=Math.min(0,...numbers),high=Math.max(0,...numbers);
  const plotTop=34,plotBottom=224,usable=plotBottom-plotTop;
@@ -93,19 +94,21 @@ function displayGrid(page){
  const columns=[...MONTHS.map(x=>x[0]+"_2025")];
  const heading=cfg.primary==="RECEITA"?"Natureza":"Natureza / centro de custo";
  const th='<th>'+heading+'</th>'+
-  '<th class="ggm-selected-col">Mês</th><th>Total de 2025</th>';
+  (st.showYear?MONTHS.map((m,i)=>'<th'+(i===st.month?' class="ggm-selected-col"':'')+'>'+m[0]+'</th>').join(""):'<th class="ggm-selected-col">'+MONTHS[st.month][0]+'</th>')+
+  '<th>Total de 2025</th>';
  const rows=visible.map(r=>{
   const total=cfg.primary==="DESPESA"?number(r,"TOTAL"):columns.reduce((a,k)=>a+number(r,k),0);
   const title=cfg.primary==="DESPESA"?
    '<strong>'+esc(r.DESCRNAT)+'</strong><span>'+esc(r.DESCRCENCUS||"Sem centro")+'</span>':
    '<strong>'+esc(r.DESCRNAT)+'</strong>';
-  return '<tr><td class="ggm-name">'+title+'</td><td class="ggm-selected-col">'+money(number(r,key))+'</td><td>'+money(total)+'</td></tr>';
+  const months=st.showYear?MONTHS.map((m,i)=>'<td'+(i===st.month?' class="ggm-selected-col"':'')+'>'+money(number(r,m[0]+"_2025"))+'</td>').join(""):'<td class="ggm-selected-col">'+money(number(r,key))+'</td>';
+  return '<tr><td class="ggm-name">'+title+'</td>'+months+'<td>'+money(total)+'</td></tr>';
  }).join("");
  const grand=all.reduce((t,r)=>t+number(r,key),0);
  return '<div class="ggm-table-hint"><span>Exibindo <b>'+all.length+'</b> natureza(s)/centro(s) após o filtro</span>'+
  '<span>'+MONTHS[st.month][1]+': <b>'+money(grand)+'</b> na grade</span></div>'+
- '<div class="ggm-scroll"><table class="ggm-table"><thead><tr>'+th+'</tr></thead><tbody>'+
- (rows||'<tr><td colspan="3">Nenhum registro encontrado.</td></tr>')+
+ '<div class="ggm-scroll"><table class="ggm-table'+(st.showYear?' is-full-year':'')+'"><thead><tr>'+th+'</tr></thead><tbody>'+
+ (rows||'<tr><td colspan="'+(st.showYear?14:3)+'">Nenhum registro encontrado.</td></tr>')+
  '</tbody></table></div>'+
  '<div class="ggm-paging"><button type="button" data-ggm-prev'+(st.page<=1?' disabled':'')+'>Anterior</button>'+
  '<span>Página '+st.page+' de '+maxPages+'</span><button type="button" data-ggm-next'+(st.page>=maxPages?' disabled':'')+'>Próxima</button></div>';
@@ -132,9 +135,9 @@ function paint(page){
  '<section class="gg-panel ggm-grid"><div class="ggm-grid-head"><div><h3>Detalhamento por '+(page==="20P"?"natureza":"natureza e centro de custo")+'</h3>'+
  '<p>A coluna do mês acompanha a seleção acima; o total utiliza a regra da grade original.</p></div>'+
  '<div class="ggm-search"><input id="ggm-filter-text" type="text" placeholder="Buscar natureza ou centro" value="'+esc(st.needle)+'" />'+
- '<button type="button" data-ggm-search>Pesquisar</button></div></div>'+
+ '<button type="button" data-ggm-search>Pesquisar</button><button type="button" data-ggm-year>'+(st.showYear?'Ver só mês selecionado':'Ver 12 meses')+'</button></div></div>'+
  (st.errorGrid?'<p class="ggm-error">'+esc(st.errorGrid)+'</p>':st.loading&&!st.grid.length?'<p class="ggm-hint">Consultando tabela…</p>':displayGrid(page))+
- '</section><p class="ggm-foot">As consultas da grade e do gráfico mantêm suas próprias exclusões de TOP e natureza, como no gadget 380. Por isso os totais podem não coincidir exatamente. Não somar os dois conjuntos.</p>';
+ '</section><div class="ggm-related"><button type="button" data-ggm-pending class="gg-button">Ver '+(page==="20P"?"receitas":"despesas")+' pendentes →</button></div><p class="ggm-foot">As consultas da grade e do gráfico mantêm suas próprias exclusões de TOP e natureza, como no gadget 380. Por isso os totais podem não coincidir exatamente. Não somar os dois conjuntos.</p>';
 }
 async function load(page,force){
  const c=ctx[page],st=state(page);if(!c||!c.companies.length||st.loading)return;
@@ -161,6 +164,8 @@ function click(page,event){
  if(btn.hasAttribute("data-ggm-month")){
   const ix=Number(btn.dataset.ggmMonth);if(ix>=0&&ix<12){st.month=ix;st.page=1;paint(page);}return;
  }
+ if(btn.hasAttribute("data-ggm-year")){st.showYear=!st.showYear;paint(page);return;}
+ if(btn.hasAttribute("data-ggm-pending")){window.GGFluxoCaixa.openSection(page==="20P"?"20O":"06B");return;}
  if(btn.hasAttribute("data-ggm-search")){
   const input=c.container.querySelector("#ggm-filter-text");
   st.needle=input?input.value.trim():"";st.page=1;paint(page);return;
