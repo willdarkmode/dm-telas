@@ -21,7 +21,7 @@ const now=isoToday();
 const p={start:now,end:addDays(now,99),group:"week",ctx:null,root:null,
  data:[],groups:[],loadedKey:"",error:"",busy:false,detailBusy:false,detailErr:"",
  selectedIndex:-1,kind:"ARECEBER",details:[],detailPage:1,hasMore:false,detailToken:0,queryToken:0,
- legacy:[],legacyError:"",legacyBusy:false,legacyKey:"",tablePage:1,notice:""};
+ legacy:[],legacyChart:[],legacyError:"",legacyChartError:"",legacyBusy:false,legacyKey:"",tablePage:1,notice:""};
 const kinds=[
  ["ARECEBER","A receber","ABERTO",1,"ARECEBER_DIA"],
  ["APAGAR","A pagar","ABERTO",-1,"APAGAR_DIA"],
@@ -41,7 +41,7 @@ function validate(){
  return days;
 }
 function sql(name,replacements={}){
- const templ= name==="grd_1BP"?window.GGFluxoOriginalSQL&&window.GGFluxoOriginalSQL.grd_1BP:
+ const templ= ["grd_1BP","cht_1JA"].includes(name)?window.GGFluxoOriginalSQL&&window.GGFluxoOriginalSQL[name]:
    window.GGFluxoPeriodoSQL&&window.GGFluxoPeriodoSQL[name];
  if(typeof templ!=="string"||!templ.trim())throw Error("A consulta "+name+" não está no JSP. Importe a v0.9.0.");
  let output=templ.replace(/:CODEMP\b/g,companies());
@@ -147,9 +147,13 @@ const legacyColumns=[["Hoje","Hoje"],["Amanha","Amanhã"],["Dez","10 dias"],["Vi
  ["Quarenta","40 dias"],["Cinquenta","50 dias"],["Sessenta","60 dias"],["Setenta","70 dias"],
  ["Oitenta","80 dias"],["Noventa","90 dias"],["Cem","100 dias"]];
 function legacy(){
- if(!p.legacy.length)return '<p class="ggpr-muted">Grade original não carregada.</p>';
+ if(!p.legacy.length&&!p.legacyChart.length)return '<p class="ggpr-muted">A referência original só será consultada quando você solicitar.</p>';
  const rows=p.legacy.slice().sort((a,b)=>number(a,"ORDEM")-number(b,"ORDEM"));
- return '<p class="ggpr-muted">Faixas da grade original do gadget 380. As regras de fim de semana e os períodos desta grade são diferentes das do gráfico original. Não compare automaticamente as colunas com a simulação diária.</p>'+
+ const oldGraph=p.legacyChart.length&&window.GGFinancePrincipal&&typeof window.GGFinancePrincipal.legacyPreview==="function"?
+   '<h4>Gráfico original de 100 dias</h4>'+window.GGFinancePrincipal.legacyPreview(p.legacyChart):'';
+ return '<p class="ggpr-muted">Dados de referência do gadget 380. O gráfico e a grade antigos possuem critérios diferentes de agrupamento e fim de semana; não compare automaticamente com a projeção por datas livres.</p>'+
+ (p.legacyChartError?'<p class="ggpr-error">'+esc(p.legacyChartError)+'</p>':'')+oldGraph+
+ '<h4>Grade histórica do gadget 380</h4>'+
  '<div class="ggpr-table-wrap"><table class="ggpr-table ggpr-legacy"><thead><tr><th>Componente</th>'+legacyColumns.map(x=>'<th>'+x[1]+'</th>').join("")+'</tr></thead><tbody>'+
  rows.map(r=>'<tr><th>'+esc(String(r.TIPO||"").replace(/<[^>]*>/g,""))+'</th>'+
  legacyColumns.map(x=>'<td>'+cash(number(r,x[0]))+'</td>').join("")+'</tr>').join("")+'</tbody></table></div>';
@@ -159,8 +163,8 @@ function paint(){
  let host=p.ctx.container.querySelector("#gg-projecao-periodo");
  if(!host){host=document.createElement("section");host.id="gg-projecao-periodo";p.ctx.container.appendChild(host);}
  const busy=p.busy,days=(()=>{try{return validate()}catch{return 0}})();
- host.innerHTML='<div class="ggpr-heading"><div class="gg-kicker">NOVO · PROJEÇÃO COM PERÍODO PERSONALIZADO</div>'+
- '<h2>Planejamento financeiro por intervalo</h2>'+
+ host.innerHTML='<div class="ggpr-heading"><div class="gg-kicker">PROJEÇÃO FINANCEIRA · PERÍODO LIVRE</div>'+
+ '<h2>Projeção de caixa</h2>'+
  '<p>Escolha datas livres (até 730 dias), agrupe por dia, semana ou mês e abra os títulos do período.</p></div>'+
  '<section class="gg-panel ggpr-filters"><div class="ggpr-dates">'+
  '<label>Data inicial<input data-ggpr-start type="date" value="'+esc(p.start)+'"></label>'+
@@ -181,9 +185,9 @@ function paint(){
  '<p class="ggpr-muted">A receber, a pagar, recebido e pago são valores do período. O saldo é acumulado desde a data inicial. Clique em um período para consultar os títulos.</p>'+
  summary()+'</section>'+selectedDetail():
  '<section class="gg-panel ggpr-empty">Selecione o intervalo desejado e clique em <strong>Consultar período</strong>. A consulta só é executada quando solicitada.</section>')+
- '<details class="gg-panel ggpr-original"'+(p.legacyBusy||p.legacy.length||p.legacyError?' open':'')+'><summary>Comparar com a grade original de 100 dias (gadget 380)</summary>'+
- '<p class="ggpr-muted">Consulta legada preservada sem alterações. Pode demorar; execute separadamente da projeção personalizada.</p>'+
- '<button type="button" class="gg-button" data-ggpr-legacy'+(p.legacyBusy?' disabled':'')+'>'+(p.legacyBusy?'Consultando…':'Carregar grade original')+'</button>'+
+ '<details class="gg-panel ggpr-original"'+(p.legacyBusy||p.legacy.length||p.legacyChart.length||p.legacyError?' open':'')+'><summary>Comparar com o gadget 380 · referência antiga de 100 dias</summary>'+
+ '<p class="ggpr-muted">Opcional para auditoria. O gráfico e a grade originais são consultados somente ao solicitar; sua projeção personalizada permanece a visão principal.</p>'+
+ '<button type="button" class="gg-button" data-ggpr-legacy'+(p.legacyBusy?' disabled':'')+'>'+(p.legacyBusy?'Consultando referência…':'Carregar comparação original')+'</button>'+
  (p.legacyError?'<p class="ggpr-error">'+esc(p.legacyError)+'</p>':'')+
  legacy()+'</details>';
 }
@@ -194,7 +198,7 @@ function invalidateIfCompaniesChanged(){
  if(p.loadedKey&&p.loadedKey.split("|").slice(-1)[0]!==key){
   p.data=[];p.groups=[];p.loadedKey="";p.error="";p.queryToken++;p.busy=false;resetDetail();
  }
- if(p.legacyKey&&p.legacyKey!==key){p.legacy=[];p.legacyKey="";p.legacyError="";}
+ if(p.legacyKey&&p.legacyKey!==key){p.legacy=[];p.legacyChart=[];p.legacyKey="";p.legacyError="";p.legacyChartError="";}
 }
 function rebuildCumulative(rows){
  const totals={ARECEBER:0,APAGAR:0,RECEBIDO:0,PAGO:0};
@@ -254,10 +258,18 @@ async function loadDetails(targetPage){
 }
 async function loadLegacy(){
  if(p.legacyBusy)return;
- p.legacyBusy=true;p.legacyError="";paint();
+ const key=companies(),ctx=p.ctx;
+ p.legacyBusy=true;p.legacyError="";p.legacyChartError="";p.legacy=[];p.legacyChart=[];paint();
  try{
-  const rows=await p.ctx.execute(sql("grd_1BP"));
-  p.legacy=Array.isArray(rows)?rows:[];p.legacyKey=companies();
+  const rows=await ctx.execute(sql("cht_1JA"));
+  if(companies()!==key)return;
+  p.legacyChart=Array.isArray(rows)?rows:[];
+ }catch(e){p.legacyChartError=String(e&&e.message||e);}
+ paint();
+ try{
+  const rows=await ctx.execute(sql("grd_1BP"));
+  if(companies()!==key)return;
+  p.legacy=Array.isArray(rows)?rows:[];p.legacyKey=key;
  }catch(e){p.legacyError=String(e&&e.message||e);}
  finally{p.legacyBusy=false;paint();}
 }
@@ -308,7 +320,7 @@ function onChange(ev){
  }
 }
 window.GGProjecao={
- version:"0.9.0",
+ version:"0.9.1",
  render(context){
   p.ctx=context;
   if(p.root!==context.container){
