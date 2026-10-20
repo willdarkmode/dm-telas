@@ -1,4 +1,4 @@
-/* GoldenGear — Receitas/Despesas Pendentes, HTML5 v0.5.0.
+/* GoldenGear — Receitas/Despesas Pendentes, HTML5 v0.8.0.
    A interface publica NAO guarda SQL financeiro. As quatro consultas do
    gadget 380 sao entregues exclusivamente no principal.jsp do Sankhya. */
 (function () {
@@ -40,13 +40,18 @@
   const app=window.GGFluxoCaixa;
   return !app||typeof app.getCurrentPage!=="function"||app.getCurrentPage()===page;
  }
- function s(page){return store[page]||(store[page]={summary:[],details:[],period:"",pageNum:1,loading:false,detailLoading:false,error:"",detailError:"",hasMore:false,token:0,detailToken:0,group:""});}
+ function s(page){return store[page]||(store[page]={summary:[],details:[],period:"",pageNum:1,loading:false,detailLoading:false,error:"",detailError:"",launchMessage:"",hasMore:false,token:0,detailToken:0,group:""});}
  function paint(page){
   const ctx=contexts[page],def=defs[page],st=s(page);if(!ctx||!isShown(page))return;
   const host=ctx.container; if(!host)return;
   const options=ctx.companies.map(c=>'<label class="gg-check"><input type="checkbox" data-pend-company value="'+Number(c.CODEMP)+'"'+(ctx.selected.includes(Number(c.CODEMP))?" checked":"")+'><span>'+esc(c.NOMEFANTASIA)+' <small>('+Number(c.CODEMP)+')</small></span></label>').join("");
   const periods=st.summary.map((r,i)=>'<tr class="'+(st.period===String(r.MES)?"ggp-selected":"")+'"><td><button type="button" class="ggp-period" data-period="'+i+'">'+esc(r.MES)+'</button></td><td>'+cash(r.ARECEBER)+'</td><td>'+cash(r.VENCIDO)+'</td><td>'+cash(r.AVENCER)+'</td></tr>').join("");
-  const titles=st.details.map(r=>'<tr><td>'+esc(r.NUFIN)+'</td><td>'+esc(r.NUMNOTA)+'</td><td>'+esc(r.NOMEPARC)+'</td><td>'+esc(r.DTVENC)+'</td><td>'+cash(r.VALOR)+'</td><td>'+esc(r.STATUS)+'</td></tr>').join("");
+  const titles=st.details.map((r,i)=>{
+    const n=Number(r.NUFIN),valid=Number.isSafeInteger(n)&&n>0;
+    const numberCell=valid?'<button type="button" data-pend-open="'+i+'" class="ggp-open-fin" title="Abrir Movimentação Financeira pelo NUFIN '+n+'">↗ '+n+'</button>'+
+      '<button type="button" data-pend-copy="'+i+'" class="ggp-copy-fin" title="Copiar NUFIN '+n+'">Copiar</button>':esc(r.NUFIN);
+    return '<tr><td>'+numberCell+'</td><td>'+esc(r.NUMNOTA)+'</td><td>'+esc(r.NOMEPARC)+'</td><td>'+esc(r.DTVENC)+'</td><td>'+cash(r.VALOR)+'</td><td>'+esc(r.STATUS)+'</td></tr>';
+  }).join("");
   host.innerHTML=
    '<section class="gg-panel ggp-hero"><div><div class="gg-kicker">FINANCEIRO • '+esc(def.kind.toUpperCase())+'</div><h2>'+esc(def.title)+'</h2>'+
    '<p>Consulta original do gadget 380. Selecione um período à esquerda para detalhar seus títulos.</p></div>'+
@@ -58,7 +63,8 @@
    (st.error?'<p class="ggp-error">'+esc(st.error)+'</p>':st.loading?'<p>Consultando períodos…</p>':
    '<div class="ggp-scroll"><table class="ggp-table"><thead><tr><th>Período</th><th>'+ (page==="20O"?"A receber":"A pagar")+'</th><th>Vencido</th><th>A vencer</th></tr></thead><tbody>'+periods+'</tbody></table></div>')+
    '</section><section class="gg-panel ggp-titles"><h3>Títulos '+(st.period?'— '+esc(st.period):'por período')+'</h3>'+
-   '<p class="ggp-helper">Paginação no Oracle: 50 títulos por página. NUFIN é o identificador nativo; abertura da Movimentação Financeira ainda pendente de integração.</p>'+
+   '<p class="ggp-helper">Paginação no Oracle: 50 títulos por página. Clique no NUFIN para solicitar a abertura da Movimentação Financeira; use Copiar se precisar localizar o título manualmente.</p>'+
+   (st.period?'<div class="ggp-launch-message" role="status" aria-live="polite">'+esc(st.launchMessage||"Abertura nativa em homologação: confirme a tela e o NUFIN antes de qualquer alteração financeira.")+'</div>':'')+
    (st.detailError?'<p class="ggp-error">'+esc(st.detailError)+'</p>':st.detailLoading?'<p>Carregando títulos…</p>':
    st.period?'<div class="ggp-scroll"><table class="ggp-table"><thead><tr><th>NUFIN</th><th>Nota</th><th>Parceiro</th><th>Vencimento</th><th>Valor</th><th>Status</th></tr></thead><tbody>'+
    (titles||'<tr><td colspan="6">Nenhum título neste período.</td></tr>')+'</tbody></table></div>':
@@ -71,7 +77,7 @@
   const ctx=contexts[page],st=s(page);if(!ctx||st.loading)return;
   const key=(ctx.selected||[]).join(",");
   if(!force&&st.group===key&&st.summary.length){paint(page);return;}
-  const token=++st.token;st.detailToken++;st.group=key;st.summary=[];st.details=[];st.period="";st.error="";st.detailError="";st.pageNum=1;st.hasMore=false;st.loading=true;paint(page);
+  const token=++st.token;st.detailToken++;st.group=key;st.summary=[];st.details=[];st.period="";st.error="";st.detailError="";st.launchMessage="";st.pageNum=1;st.hasMore=false;st.loading=true;paint(page);
   try{
    const rows=await ctx.execute(prepare(defs[page].sum,ctx));
    if(st.token!==token)return;
@@ -91,8 +97,51 @@
   }catch(e){if(st.detailToken===token&&st.period===period)st.detailError=String(e&&e.message||e);}
   finally{if(st.detailToken===token){st.detailLoading=false;paint(page);}}
 }
+const nativeFinancialResource="br.com.sankhya.fin.cad.movimentacaoFinanceira";
+function financialId(row){
+ const n=Number(row&&row.NUFIN);
+ return Number.isSafeInteger(n)&&n>0?n:null;
+}
+function openFinancial(page,index){
+ const st=s(page),row=st.details[index],id=financialId(row);
+ if(id===null){st.launchMessage="NUFIN inválido; abertura cancelada.";paint(page);return;}
+ let host=null,launch=null;
+ for(const target of [window,window.parent,window.top]){
+   try{if(target && typeof target.openApp==="function"){host=target;launch=target.openApp;break;}}
+   catch(_ignored){ /* Isolamento de origem do iframe. */ }
+ }
+ if(!launch){
+   st.launchMessage="A função openApp() não está disponível neste contexto HTML5. Copie o NUFIN "+id+" e pesquise na tela Financeiro > Movimentação Financeira.";
+   paint(page);return;
+ }
+ try{
+   launch.call(host,nativeFinancialResource,{NUFIN:id});
+   st.launchMessage="Solicitação de abertura enviada para o NUFIN "+id+". Verifique se o Sankhya abriu o título correto; a navegação ainda está em homologação.";
+ }catch(err){
+   st.launchMessage="Não foi possível solicitar abertura do NUFIN "+id+": "+String(err&&err.message||err)+". Use Copiar e abra a Movimentação Financeira manualmente.";
+ }
+ paint(page);
+}
+async function copyFinancial(page,index){
+ const st=s(page),id=financialId(st.details[index]);
+ if(id===null){st.launchMessage="NUFIN inválido.";paint(page);return;}
+ try{
+   if(!navigator.clipboard || typeof navigator.clipboard.writeText!=="function")throw Error("Clipboard não disponível.");
+   await navigator.clipboard.writeText(String(id));
+   st.launchMessage="NUFIN "+id+" copiado. Na Movimentação Financeira, pesquise por este número.";
+ }catch(_ignored){
+   // Acesso à área de transferência pode estar bloqueado dentro do iframe.
+   window.prompt("Copie o NUFIN para pesquisar na Movimentação Financeira:",String(id));
+   st.launchMessage="NUFIN "+id+" selecionado para cópia manual.";
+ }
+ paint(page);
+}
 function handle(page,ev){
   const ctx=contexts[page],st=s(page);if(!ctx)return;
+  const open=ev.target.closest("[data-pend-open]");
+  if(open){const i=Number(open.dataset.pendOpen);if(Number.isSafeInteger(i)&&i>=0)openFinancial(page,i);return;}
+  const copy=ev.target.closest("[data-pend-copy]");
+  if(copy){const i=Number(copy.dataset.pendCopy);if(Number.isSafeInteger(i)&&i>=0)copyFinancial(page,i);return;}
   if(ev.target.closest("[data-pend-refresh]")){load(page,true);return;}
   if(ev.target.closest("[data-pend-apply]")){
     const vals=[...ctx.container.querySelectorAll("[data-pend-company]:checked")].map(x=>Number(x.value)).filter(Number.isSafeInteger);
@@ -102,13 +151,13 @@ function handle(page,ev){
   const periodBtn=ev.target.closest("[data-period]");
   if(periodBtn){
     const row=st.summary[Number(periodBtn.dataset.period)];if(!row)return;
-    st.period=String(row.MES);st.details=[];st.pageNum=1;st.hasMore=false;loadDetails(page,1);return;
+    st.period=String(row.MES);st.details=[];st.launchMessage="";st.pageNum=1;st.hasMore=false;loadDetails(page,1);return;
   }
   if(ev.target.closest("[data-pend-prev]"))loadDetails(page,st.pageNum-1);
   if(ev.target.closest("[data-pend-next]"))loadDetails(page,st.pageNum+1);
  }
  window.GGPendentes={
-   version:"0.5.0",
+   version:"0.8.0",
    render(page,args){
      if(!defs[page])return;
      contexts[page]=Object.assign({},args,{page});
