@@ -182,3 +182,12 @@ Solicitação funcional prioritária do financeiro: consultar projeções para *
 Captura de homologação do gadget **465** apresentada pelo responsável: a seção **Planejamento financeiro por intervalo** carregou sem erro visível com datas de **20/10/2026 a 27/01/2027** (100 dias), agrupamento semanal, quatro indicadores financeiros e gráfico acumulado. O saldo projetado mostrado é aritmeticamente consistente com as parcelas "a receber" e "a pagar" apresentadas.
 
 **Limites desta evidência:** embora os campos aceitem datas personalizadas, a captura ainda **não** demonstra consulta de 365 ou 730 dias; tampouco comprova a paginação, a grade de componentes, a reconsulta em lotes ou a abertura de NUFIN dentro do novo módulo. Teste seguinte: selecionar **365 dias**, clicar **Consultar período**, verificar valores e períodos; depois selecionar um período na tabela e testar um NUFIN de título conhecido. Não publicar saldos ou dados financeiros da captura no repositório público.
+
+
+## Evidência visual v0.9.0 — horizonte de 365 dias (20/10/2026)
+
+Captura do gadget de homologação **465** mostra o novo módulo **Planejamento financeiro por intervalo** em execução para **20/10/2026 a 19/10/2027**, totalizando **365 dias inclusivos**, com agrupamento **semanal (7 dias)**. Os quatro cards retornaram valores, e o gráfico acumulado com três séries carregou sem mensagens de erro ou truncamento visíveis. Foi conferido que o saldo final exibido equivale aritmeticamente à soma algébrica de A receber e A pagar.
+
+**Status:** prova visual de funcionamento da consulta e gráfico para 365 dias, que atende ao requisito de horizonte superior a 100 dias solicitado pelo time financeiro. A imagem não comprova, por si só, paridade de todas as regras com a consulta antiga, nem detalhamento funcional dentro da nova projeção. **Próximo teste:** rolar até **Composição por período**, clicar em uma semana, conferir abas A receber/A pagar e abrir um NUFIN de título conhecido. Testes para datas livres não predefinidas e 730 dias permanecem adicionais.
+
+**Importante:** a projeção parte de zero na data inicial, não inclui saldos bancários de abertura, vencidos anteriores nem previsões de movimentos não cadastrados. Não publicar números monetários, nomes ou títulos extraídos das capturas no repositório público. Nenhuma mudança de gadget foi realizada por esta documentação.
