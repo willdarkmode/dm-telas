@@ -181,7 +181,7 @@ function paint(){
  '<p class="ggpr-muted">A receber, a pagar, recebido e pago são valores do período. O saldo é acumulado desde a data inicial. Clique em um período para consultar os títulos.</p>'+
  summary()+'</section>'+selectedDetail():
  '<section class="gg-panel ggpr-empty">Selecione o intervalo desejado e clique em <strong>Consultar período</strong>. A consulta só é executada quando solicitada.</section>')+
- '<details class="gg-panel ggpr-original"><summary>Comparar com a grade original de 100 dias (gadget 380)</summary>'+
+ '<details class="gg-panel ggpr-original"'+(p.legacyBusy||p.legacy.length||p.legacyError?' open':'')+'><summary>Comparar com a grade original de 100 dias (gadget 380)</summary>'+
  '<p class="ggpr-muted">Consulta legada preservada sem alterações. Pode demorar; execute separadamente da projeção personalizada.</p>'+
  '<button type="button" class="gg-button" data-ggpr-legacy'+(p.legacyBusy?' disabled':'')+'>'+(p.legacyBusy?'Consultando…':'Carregar grade original')+'</button>'+
  (p.legacyError?'<p class="ggpr-error">'+esc(p.legacyError)+'</p>':'')+
