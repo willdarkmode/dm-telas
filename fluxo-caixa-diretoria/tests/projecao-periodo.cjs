@@ -20,7 +20,7 @@ const data=Array.from({length:7},(_,i)=>({
 const execute=async sql=>{calls.push(sql);return sql.includes("OFFSET ")?[{NUFIN:789,NUMNOTA:21,NOMEPARC:"Teste",CODEMP:1,DTVENC:"20/10/2026",VALOR:100}]:data;};
 w.GGProjecao.render({container:root,companies:[{CODEMP:1,NOMEFANTASIA:"Teste"}],selected:[1],execute,setSelected(){}});
 const click=(attribute,value)=>{
- const prop=attribute.replace("data-ggpr-","").replace(/-([a-z])/g,(_,c)=>c.toUpperCase());
+ const prop=attribute.replace("data-","").replace(/-([a-z])/g,(_,c)=>c.toUpperCase());
  const button={dataset:{[prop]:String(value)},hasAttribute:k=>k===attribute};
  events.click({target:{closest:tag=>tag==="button"?button:null}});
 };
