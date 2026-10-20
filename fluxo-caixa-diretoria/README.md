@@ -144,3 +144,18 @@ O responsável testou o clique em um `NUFIN` a partir do gadget de testes **465*
 **Validação confirmada em 20/10/2026:** o responsável selecionou uma nota pelo `NUFIN` no gadget 465 e confirmou que o Sankhya abriu **exatamente o título selecionado** na tela nativa de Movimentações Financeiras. A navegação contextual por `NUFIN` fica homologada para o cenário testado, sem edição ou baixa do título. As permissões devem continuar sendo respeitadas para cada usuário.
 
 A portabilidade das sete seções e o botão `Ver 12 meses` já tiveram execução visual confirmada. A conciliação dos valores financeiros do **465** com o gadget original **380** permanece em aberto. Não alterar o gadget **380** ou dashboard **226**.
+
+
+## Auditoria estrutural e conciliação inicial — 20/10/2026
+
+A homologação financeira entrou na etapa de comparação técnica da v0.8.0, **sem alterar os gadgets 380/465 nem o dashboard 226**. Analisamos o XML extraído do 380, o `principal.jsp` do ZIP v0.8.0 e os metadados de `TSIGDG` no ambiente de produção, exclusivamente por consultas de leitura.
+
+- O XML original contém **26 consultas SQL** e o JSP HTML5 **22 consultas**. Destas, **21 são textualmente idênticas** às originais.
+- Exceção: `svl_22D` remove o `ORDER BY SBC.SALDOREAL DESC` após a agregação do saldo bancário. A operação é global e `SOMA_TOTAL` soma apenas contas internas 8, 6, 9 e 7; não inclui espécie (19) nem cheques (10).
+- Quatro consultas não migradas: `grd_1BP` (grade analítica da projeção de 100 dias: pendência funcional), `svl_26E` (bloco investimentos com placeholder), `svl_11F` e `svl_11G` (consultas duplicadas exatamente iguais à `svl_8UZ`).
+- Conferimos os cálculos agregados de **receitas e despesas de 2025**, os dois indicadores comerciais, o saldo bancário e a avaliação de estoque em consultas de produção *read-only*. Os valores monetários e dados de cliente não devem entrar neste repositório público; estão em relatório privado entregue ao responsável.
+- O valor do indicador de faturamento anual e a porcentagem da meta **coincidiram com a evidência visual da v0.7.0**. Os outros itens não podem ser declarados homologados sem valores comparados do 380 e 465 para os mesmos filtros e momento.
+- Riscos documentados: `CODEMP` ausente no detalhamento de Salários CC; TOPs diferentes entre faturamento/meta e séries/grades; anos fixos em 2025; uso de referências bancárias e custos de estoque dinâmicos; data final original com `BETWEEN` até meia-noite (risco de corte de horários, não constatado no agregado inspecionado).
+- **Próxima validação:** comparar as telas 380 e 465 no mesmo momento, com as mesmas empresas, e preencher as diferenças por indicador; depois migrar `grd_1BP` sem modificar a fórmula da projeção.
+
+A planilha privada de reconciliação contém abas de conferência 380 × 465, inventário das 26 SQLs, riscos e roteiro para testes. Ela não deve ser publicada no GitHub por conter totais financeiros extraídos do ambiente de produção.
