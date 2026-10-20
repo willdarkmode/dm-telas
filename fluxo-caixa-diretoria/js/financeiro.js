@@ -97,7 +97,7 @@ function click(ev){
 }
 window.GGFinancePrincipal={
  version:"0.9.1",
- legacyPreview(rows){const list=series(rows);return plot(list)+table(list);},
+ legacyPreview(rows){return plot(series(rows));},
  render(args){st.ctx=args;if(st.root!==args.container){if(st.root)st.root.removeEventListener("click",click);st.root=args.container;st.root.addEventListener("click",click);}paint();},
  load
 };
