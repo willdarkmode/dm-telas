@@ -21,7 +21,7 @@ const now=isoToday();
 const p={start:now,end:addDays(now,99),group:"week",ctx:null,root:null,
  data:[],groups:[],loadedKey:"",error:"",busy:false,detailBusy:false,detailErr:"",
  selectedIndex:-1,kind:"ARECEBER",details:[],detailPage:1,hasMore:false,detailToken:0,queryToken:0,
- legacy:[],legacyChart:[],legacyError:"",legacyChartError:"",legacyBusy:false,legacyKey:"",tablePage:1,notice:""};
+ legacy:[],legacyChart:[],legacyError:"",legacyChartError:"",legacyBusy:false,legacyKey:"",legacyToken:0,tablePage:1,notice:""};
 const kinds=[
  ["ARECEBER","A receber","ABERTO",1,"ARECEBER_DIA"],
  ["APAGAR","A pagar","ABERTO",-1,"APAGAR_DIA"],
@@ -198,7 +198,7 @@ function invalidateIfCompaniesChanged(){
  if(p.loadedKey&&p.loadedKey.split("|").slice(-1)[0]!==key){
   p.data=[];p.groups=[];p.loadedKey="";p.error="";p.queryToken++;p.busy=false;resetDetail();
  }
- if(p.legacyKey&&p.legacyKey!==key){p.legacy=[];p.legacyChart=[];p.legacyKey="";p.legacyError="";p.legacyChartError="";}
+ if(p.legacyKey&&p.legacyKey!==key){p.legacyToken++;p.legacyBusy=false;p.legacy=[];p.legacyChart=[];p.legacyKey="";p.legacyError="";p.legacyChartError="";}
 }
 function rebuildCumulative(rows){
  const totals={ARECEBER:0,APAGAR:0,RECEBIDO:0,PAGO:0};
@@ -258,20 +258,25 @@ async function loadDetails(targetPage){
 }
 async function loadLegacy(){
  if(p.legacyBusy)return;
- const key=companies(),ctx=p.ctx;
- p.legacyBusy=true;p.legacyError="";p.legacyChartError="";p.legacy=[];p.legacyChart=[];paint();
+ let key;
+ try{key=companies();}catch(e){p.legacyError=String(e.message||e);paint();return;}
+ const token=++p.legacyToken,ctx=p.ctx;
+ p.legacyKey=key;p.legacyBusy=true;p.legacyError="";p.legacyChartError="";p.legacy=[];p.legacyChart=[];paint();
  try{
-  const rows=await ctx.execute(sql("cht_1JA"));
-  if(companies()!==key)return;
-  p.legacyChart=Array.isArray(rows)?rows:[];
- }catch(e){p.legacyChartError=String(e&&e.message||e);}
- paint();
- try{
-  const rows=await ctx.execute(sql("grd_1BP"));
-  if(companies()!==key)return;
-  p.legacy=Array.isArray(rows)?rows:[];p.legacyKey=key;
- }catch(e){p.legacyError=String(e&&e.message||e);}
- finally{p.legacyBusy=false;paint();}
+  for(const id of ["cht_1JA","grd_1BP"]){
+   try{
+    const rows=await ctx.execute(sql(id));
+    if(token!==p.legacyToken||companies()!==key)return;
+    if(id==="cht_1JA")p.legacyChart=Array.isArray(rows)?rows:[];
+    else p.legacy=Array.isArray(rows)?rows:[];
+   }catch(e){
+    if(token!==p.legacyToken)return;
+    if(id==="cht_1JA")p.legacyChartError=String(e&&e.message||e);
+    else p.legacyError=String(e&&e.message||e);
+   }
+   paint();
+  }
+ }finally{if(token===p.legacyToken){p.legacyBusy=false;paint();}}
 }
 function openNufin(index){
  const row=p.details[index],n=Number(row&&row.NUFIN);
