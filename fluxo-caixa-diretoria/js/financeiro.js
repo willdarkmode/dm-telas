@@ -77,6 +77,7 @@ function paint(){
  '<div class="ggf-heading"><div class="gg-kicker">FLUXO ACUMULADO · 100 DIAS</div><h2>Projeção financeira</h2><p>Sem saldo inicial das contas bancárias.</p></div>'+
  '<section class="gg-panel">'+(err?'<p class="ggf-error">'+esc(err)+'</p>':st.loading&&!st.rows.cht_1JA?'<p>Consultando projeção…</p>':plot(rows)+table(rows))+'</section>'+
  '<p class="ggf-status" role="status">'+(st.loading?'Consultando Sankhya…':'Homologação pendente: comparar os resultados com o gadget 380.')+'</p>';
+ if (window.GGProjecao && typeof window.GGProjecao.render === 'function') window.GGProjecao.render(st.ctx);
  if (window.GGPrincipalExtras && typeof window.GGPrincipalExtras.render === 'function') window.GGPrincipalExtras.render(st.ctx);
 }
 async function load(){
@@ -98,7 +99,7 @@ function click(ev){
  st.ctx.selected=selected;st.ctx.setSelected(selected);load();
 }
 window.GGFinancePrincipal={
- version:"0.4.0",
+ version:"0.9.0",
  render(args){st.ctx=args;if(st.root!==args.container){if(st.root)st.root.removeEventListener("click",click);st.root=args.container;st.root.addEventListener("click",click);}paint();},
  load
 };
