@@ -196,16 +196,46 @@ function invalidateIfCompaniesChanged(){
  }
  if(p.legacyKey&&p.legacyKey!==key){p.legacy=[];p.legacyKey="";p.legacyError="";}
 }
+function rebuildCumulative(rows){
+ const totals={ARECEBER:0,APAGAR:0,RECEBIDO:0,PAGO:0};
+ return rows.map(r=>{
+   const normalized=Object.assign({},r);
+   for(const key of Object.keys(totals)){
+     totals[key]+=number(r,key+"_DIA");
+     normalized[key+"_ACUMULADO"]=totals[key];
+   }
+   normalized.SALDO_ACUMULADO=totals.ARECEBER+totals.APAGAR;
+   return normalized;
+ });
+}
 async function run(){
  if(p.busy)return;
  let days,key;
  try{days=validate();key=reportKey();}catch(e){p.error=String(e.message||e);paint();return;}
+ const start=p.start,end=p.end;
  p.busy=true;p.error="";resetDetail();p.data=[];p.groups=[];p.tablePage=1;const token=++p.queryToken;paint();
  try{
-  const rows=await p.ctx.execute(sql("diario",{DATA_INICIO:p.start,DATA_FIM:p.end}));
+  let rows=await p.ctx.execute(sql("diario",{DATA_INICIO:start,DATA_FIM:end}));
   if(token!==p.queryToken)return;
   if(!Array.isArray(rows))throw Error("Resposta inesperada da consulta.");
+  // Alguns ambientes limitam linhas por retorno. Reconsultar em blocos
+  // preserva qualquer horizonte até 730 dias e evita saldos truncados.
+  if(rows.length!==days && rows.length<days && days>90){
+    const slices=[];
+    for(let from=0;from<days;from+=90){
+      if(token!==p.queryToken||reportKey()!==key)return;
+      const size=Math.min(90,days-from);
+      const part=await p.ctx.execute(sql("diario",{
+        DATA_INICIO:addDays(start,from),DATA_FIM:addDays(start,from+size-1)
+      }));
+      if(token!==p.queryToken)return;
+      if(!Array.isArray(part)||part.length!==size)throw Error("O conector não retornou todos os dias no lote "+(Math.floor(from/90)+1)+".");
+      slices.push(...part);
+    }
+    rows=rebuildCumulative(slices);
+  }
   if(rows.length!==days)throw Error("O Sankhya retornou "+rows.length+" dias para um intervalo de "+days+". Verifique limites do conector.");
+  if(token!==p.queryToken||reportKey()!==key)return;
   p.data=rows;p.loadedKey=key;calcGroups();
  }catch(e){if(token===p.queryToken)p.error=String(e&&e.message||e);}
  finally{if(token===p.queryToken){p.busy=false;paint();}}
