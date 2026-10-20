@@ -176,3 +176,9 @@ Solicitação funcional prioritária do financeiro: consultar projeções para *
 **Implantação:** exclusivamente gadget de homologação **465** com ZIP JSP v0.9.0 e entryPoint `principal.jsp`. Não modificar gadget original 380 ou dashboard 226. 
 
 **Proteção adicional de v0.9.0:** quando o conector devolve menos dias do que o intervalo solicitado, a interface refaz a leitura em lotes de até 90 dias e recompõe os acumulados na ordem. Teste de regressão em ambiente simulado aprovado pelo [GitHub Actions](https://github.com/willdarkmode/dm-telas/actions/runs/39425742778). Ainda é necessário validar performance e fechamento financeiro em 365 dias no gadget 465.
+
+## Evidência visual v0.9.0 — período personalizado de 100 dias (20/10/2026)
+
+Captura de homologação do gadget **465** apresentada pelo responsável: a seção **Planejamento financeiro por intervalo** carregou sem erro visível com datas de **20/10/2026 a 27/01/2027** (100 dias), agrupamento semanal, quatro indicadores financeiros e gráfico acumulado. O saldo projetado mostrado é aritmeticamente consistente com as parcelas "a receber" e "a pagar" apresentadas.
+
+**Limites desta evidência:** embora os campos aceitem datas personalizadas, a captura ainda **não** demonstra consulta de 365 ou 730 dias; tampouco comprova a paginação, a grade de componentes, a reconsulta em lotes ou a abertura de NUFIN dentro do novo módulo. Teste seguinte: selecionar **365 dias**, clicar **Consultar período**, verificar valores e períodos; depois selecionar um período na tabela e testar um NUFIN de título conhecido. Não publicar saldos ou dados financeiros da captura no repositório público.
