@@ -199,3 +199,16 @@ O responsável enviou capturas do gadget de homologação **465**, mostrando a g
 **Esclarecimento confirmado pelo responsável:** após testar a projeção de **365 dias** (gráfico e indicadores), ele **mudou o intervalo para 100 dias** antes das capturas de composição e detalhamento. As **15 semanas** mostradas na tabela são coerentes com os 100 dias; **não existe evidência de truncamento** nessa captura. Mantêm-se como testes adicionais a composição semanal ao longo de 365 dias e o clique no NUFIN do módulo personalizado; a abertura pelo NUFIN nas abas Pendentes já foi validada.
 
 Não publicar os nomes, NUFINs ou valores financeiros presentes nas imagens no repositório público. O gadget 380 e o dashboard 226 continuam preservados.
+
+
+## v0.9.1 — Uma projeção, sem duplicidade (20/10/2026)
+
+Após retorno de usabilidade do responsável, a tela Principal foi simplificada para **apresentar somente uma projeção aberta**, a de período personalizado (datas livres até 730 dias, agrupamento dia/semana/mês, gráficos, tabelas e NUFIN). Os quatro indicadores financeiros executivos e os blocos de posição bancária, faturamento e estoque permanecem inalterados.
+
+**O gráfico fixo 100 dias deixou de aparecer e de ser consultado automaticamente.** As consultas originais `cht_1JA` e `grd_1BP` ficam preservadas no JSP, sem qualquer mudança de fórmula, acessíveis apenas pela seção recolhida **Comparar com o gadget 380 · referência antiga de 100 dias** e pelo botão **Carregar comparação original**. São executadas somente após interação explícita do usuário.
+
+O código mantém a ponte `executeQuery` e as demais sete seções. O JSP v0.9.1 distribuído como ZIP único é a reprodução byte a byte da v0.9.0, trocando **apenas o identificador de cache** `0.9.0` por `0.9.1`; a igualdade das **22 consultas originais**, da consulta legada `grd_1BP` e das duas consultas de período livre foi verificada durante a geração do pacote.
+
+Regressões automatizadas: sem consulta automática de 100 dias na Principal; referência antiga consultada sob demanda; período livre, paginação e NUFIN mantidos. [Workflow completo validado](https://github.com/willdarkmode/dm-telas/actions/runs/39433211186).
+
+**Implantação:** instalar somente no gadget de homologação **465**, preservando backup da v0.9.0. Não alterar o gadget nativo 380 ou dashboard 226. Homologação visual desta organização ainda depende de captura do usuário, especialmente verificar que o gráfico legado não aparece sem expandir a comparação.
