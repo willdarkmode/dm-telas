@@ -4,7 +4,8 @@ const events={},calls=[],opened=[],panel={innerHTML:"",id:"gg-projecao-periodo"}
 const root={querySelector(s){return s==="#gg-projecao-periodo"?panel:null;},appendChild(){},
  addEventListener(k,v){events[k]=v;},removeEventListener(){}};
 const w={GGFluxoCaixa:{getCurrentPage:()=>"078"},
- GGFluxoOriginalSQL:{grd_1BP:"SELECT CODEMP FROM TSIEMP WHERE CODEMP IN :CODEMP"},
+ GGFluxoOriginalSQL:{grd_1BP:"SELECT 'LEGACY_GRID' AS TIPO FROM DUAL WHERE CODEMP IN :CODEMP",cht_1JA:"SELECT 'LEGACY_CHART' AS PERIODO FROM DUAL WHERE CODEMP IN :CODEMP"},
+ GGFinancePrincipal:{legacyPreview:rows=>'<section class="ggpr-test-chart">Gráfico de referência '+rows.length+'</section>'},
  GGFluxoPeriodoSQL:{
  diario:"SELECT ':DATA_INICIO' INICIO, ':DATA_FIM' FIM FROM DUAL WHERE CODEMP IN :CODEMP",
  titulos:"SELECT ':DET_INICIO',':DET_FIM' FROM TGFFIN WHERE CODEMP IN :CODEMP AND RECDESP=:RECDESP AND MODO=:MODO ORDER BY NUFIN"},
@@ -20,6 +21,8 @@ const data=Array.from({length:7},(_,i)=>({
 let longMode=false;
 const execute=async sql=>{
  calls.push(sql);
+ if(sql.includes("LEGACY_CHART"))return [{PERIODO:"Hoje",AReceber_Acumulado:100,APagar_Acumulado:-40,Saldo_Acumulado:60}];
+ if(sql.includes("LEGACY_GRID"))return [{TIPO:"Total",Hoje:60,ORDEM:1}];
  if(sql.includes("OFFSET "))return [{NUFIN:789,NUMNOTA:21,NOMEPARC:"Teste",CODEMP:1,DTVENC:"20/10/2026",VALOR:100}];
  if(!longMode)return data;
  const dates=[...sql.matchAll(/'(\d{4}-\d{2}-\d{2})'/g)];
@@ -69,5 +72,10 @@ const wait=()=>new Promise(resolve=>setTimeout(resolve,25));
  click("data-ggpr-run");await wait();
  assert.equal(calls.length,5,"uma consulta inicial truncada e dois lotes de recuperação");
  assert.match(panel.innerHTML,/6\.060,00/,"Saldo final deve somar os dois lotes");
- console.log("PASS: datas personalizadas, limite 730, drilldown, NUFIN e fallback do conector");
+ assert.equal(calls.filter(x=>x.includes("LEGACY_")).length,0,"Referência original não deve consultar automaticamente");
+ assert.match(panel.innerHTML,/Comparar com o gadget 380/);
+ click("data-ggpr-legacy");await wait();
+ assert.equal(calls.filter(x=>x.includes("LEGACY_")).length,2,"Gráfico e grade legados consultados apenas por clique");
+ assert.match(panel.innerHTML,/Gráfico de referência/);
+ console.log("PASS: datas livres, 730 dias, NUFIN e referência antiga sob demanda");
 })().catch(e=>{console.error(e);process.exit(1)});
