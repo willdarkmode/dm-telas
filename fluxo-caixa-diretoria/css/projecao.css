@@ -1,0 +1,35 @@
+/* GoldenGear · Projeção personalizada v0.9.0 · sem SQL público */
+.ggpr-heading{margin:28px 0 15px}.ggpr-heading h2{font-size:24px;margin:7px 0}.ggpr-heading p,.ggpr-help,.ggpr-muted{font-size:12px;line-height:1.5;color:#687d91}
+.ggpr-filters{border-top:3px solid #138f84;margin-bottom:16px}.ggpr-dates{display:flex;align-items:end;gap:13px;flex-wrap:wrap}
+.ggpr-dates label{display:flex;flex-direction:column;gap:7px;color:#566c7d;font-size:12px;font-weight:700;min-width:170px}
+.ggpr-dates input,.ggpr-dates select{min-height:39px;border:1px solid #d9e5eb;background:#fbfdfe;color:#183548;font:inherit;font-size:13px;padding:8px 10px;border-radius:8px}
+.ggpr-dates [data-ggpr-group]{min-width:165px}.ggpr-presets{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin:15px 0 8px;font-size:12px;color:#637c91}
+.ggpr-presets button{appearance:none;border:1px solid #cce2dc;background:#ecf7f3;color:#0b806d;padding:7px 10px;border-radius:6px;font-size:12px;font-weight:650;cursor:pointer}
+.ggpr-presets button:hover{background:#d7f0e8}.ggpr-help{margin-top:12px;padding:9px 12px;background:#f1f7fa;border-radius:6px}
+.ggpr-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:15px}
+.ggpr-kpi{border-top:3px solid #0d9484}.ggpr-kpi.out{border-top-color:#d8737e}.ggpr-kpi.balance{border-top-color:#326ea1}.ggpr-kpi.done{border-top-color:#7890a2}
+.ggpr-kpi strong{display:block;font-size:clamp(18px,2vw,23px);margin-top:11px;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+#gg-projecao-periodo>.gg-panel{margin-bottom:16px}
+#gg-projecao-periodo h3{margin:2px 0 9px;font-size:19px}
+.ggpr-legend{display:flex;justify-content:flex-end;gap:17px;flex-wrap:wrap;margin-bottom:11px;color:#597386;font-size:12px}
+.ggpr-legend span{display:inline-flex;gap:7px;align-items:center}.ggpr-legend i{display:block;height:9px;width:19px;border-radius:3px}
+.ggpr-curve{overflow-x:auto;width:100%}.ggpr-curve svg{display:block;min-width:640px;width:100%;max-height:360px}
+.ggpr-table-wrap{width:100%;max-height:580px;overflow:auto}.ggpr-table{border-collapse:collapse;width:100%;min-width:820px;font-size:12px;font-variant-numeric:tabular-nums}
+.ggpr-table th,.ggpr-table td{padding:11px 10px;border-bottom:1px solid #e4ecf1;text-align:right;white-space:nowrap}.ggpr-table th:first-child,.ggpr-table td:first-child{text-align:left}
+.ggpr-table thead{position:sticky;top:0;background:#eef4f7;z-index:1;color:#516d7b}
+.ggpr-table tbody tr:hover{background:#f3faf8}.ggpr-table tbody tr.selected{background:#e9f5f2}
+.ggpr-table [data-ggpr-period],.ggpr-link{border:0;background:transparent;color:#087f74;font-size:12px;font-weight:700;cursor:pointer;text-align:left;padding:3px 0}
+.ggpr-table [data-ggpr-period]:hover,.ggpr-link:hover{text-decoration:underline}
+.ggpr-pagination{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin:14px 0 0;color:#687d8e;font-size:12px}
+.ggpr-pagination button,.ggpr-subhead button{padding:8px 12px;background:#f3f8fa;border:1px solid #d7e3e8;border-radius:7px;color:#096f6a;cursor:pointer}
+.ggpr-pagination button:disabled{opacity:.45;cursor:not-allowed}
+.ggpr-subhead{display:flex;align-items:start;justify-content:space-between;gap:15px}.ggpr-subhead p{font-size:12px;color:#708397}
+.ggpr-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+.ggpr-tabs button{border:1px solid #d3e3e6;border-radius:7px;padding:9px 13px;background:#f6faf9;color:#4a6f7d;font-size:12px;cursor:pointer}
+.ggpr-tabs button.active{color:#fff;background:#0e8b7e;border-color:#0e8b7e}
+.ggpr-empty{color:#5f788a;font-size:13px;border:1px dashed #d9e7e9;line-height:1.65}
+.ggpr-error{font-size:12px;color:#a92f39;line-height:1.6;overflow-wrap:anywhere}.ggpr-notice{color:#396e6b;background:#eff8f6;border-left:3px solid #158e81;border-radius:6px;padding:12px;margin:8px 0;font-size:12px}
+.ggpr-original summary{cursor:pointer;color:#36586b;font-size:13px;font-weight:750}.ggpr-original .ggpr-muted{margin:13px 0}
+.ggpr-original .ggpr-legacy{min-width:1650px}
+@media(max-width:1350px){.ggpr-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:680px){.ggpr-kpis{grid-template-columns:1fr}.ggpr-subhead{flex-direction:column}.ggpr-dates>*{flex:1 1 44%}.ggpr-legend{justify-content:flex-start}}
