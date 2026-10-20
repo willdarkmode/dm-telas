@@ -174,3 +174,5 @@ Solicitação funcional prioritária do financeiro: consultar projeções para *
 **Validação técnica até aqui:** consultas novas executaram no Oracle do Sankhya **somente leitura** (amostra diária de sete dias e título individual em intervalo), e teste de regressão automático verifica validade de datas, máximo de 730 dias e navegação NUFIN. A **execução de 365/730 dias no gadget 465 ainda depende da homologação do usuário**. A política de saldo de abertura, tratamento de atrasados e horizonte devem ser aprovados pelo financeiro antes de chamar isso de previsão de caixa integral.
 
 **Implantação:** exclusivamente gadget de homologação **465** com ZIP JSP v0.9.0 e entryPoint `principal.jsp`. Não modificar gadget original 380 ou dashboard 226. 
+
+**Proteção adicional de v0.9.0:** quando o conector devolve menos dias do que o intervalo solicitado, a interface refaz a leitura em lotes de até 90 dias e recompõe os acumulados na ordem. Teste de regressão em ambiente simulado aprovado pelo [GitHub Actions](https://github.com/willdarkmode/dm-telas/actions/runs/39425742778). Ainda é necessário validar performance e fechamento financeiro em 365 dias no gadget 465.
