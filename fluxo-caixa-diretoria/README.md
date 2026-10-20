@@ -136,3 +136,11 @@ O módulo visual `js/pendentes.js`, o estilo `css/pendentes.css` e o teste `test
 **JSP v0.8.0:** fornecido somente como ZIP na conversa; é uma cópia da v0.7.0 com a versão de cache das 13 URLs CSS/JS atualizada de `0.7.0` para `0.8.0` e o indicador visual da versão. As **22 consultas originais** são exatamente as mesmas (comparação do objeto `GGFluxoOriginalSQL`). Reinstalar somente no gadget de testes 465, sem alterar o XML.
 
 **Atenção:** a funcionalidade navega para a tela nativa, não efetua alterações nem baixa títulos. Testar primeiro com título já conhecido e usuário autorizado; garantir que o registro aberto corresponda ao NUFIN selecionado, sem editar ou baixar.
+
+## Retorno de homologação da v0.8.0 — abertura de Movimentações Financeiras
+
+O responsável testou o clique em um `NUFIN` a partir do gadget de testes **465** e confirmou que o Sankhya abriu a tela nativa de **Movimentações Financeiras**. A navegação via `openApp()` está, portanto, **operacional quanto à abertura da tela** no ambiente real.
+
+**Verificação ainda pendente:** confirmar que a tela abriu especificamente no registro `NUFIN` clicado (e não somente no módulo geral) e que as permissões e o comportamento de abertura são adequados. O usuário descreveu o resultado como aparentemente correto; não registrar homologação total até essa comparação.
+
+A portabilidade das sete seções e o botão `Ver 12 meses` já tiveram execução visual confirmada. A conciliação dos valores financeiros do **465** com o gadget original **380** permanece em aberto. Não alterar o gadget **380** ou dashboard **226**.
