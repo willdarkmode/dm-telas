@@ -16,6 +16,7 @@ on:
       - "fluxo-caixa-diretoria/js/pendentes.js"
       - "fluxo-caixa-diretoria/tests/pendentes-nufin.cjs"
       - "fluxo-caixa-diretoria/tests/projecao-periodo.cjs"
+      - "fluxo-caixa-diretoria/tests/principal-projecao-unica.cjs"
       - "fluxo-caixa-diretoria/js/centros.js"
       - "fluxo-caixa-diretoria/js/mensal.js"
       - "fluxo-caixa-diretoria/js/projecao.js"
@@ -53,6 +54,7 @@ jobs:
           node --check fluxo-caixa-diretoria/js/mensal.js
           node --check fluxo-caixa-diretoria/js/projecao.js
           node fluxo-caixa-diretoria/tests/projecao-periodo.cjs
+          node fluxo-caixa-diretoria/tests/principal-projecao-unica.cjs
       - name: Criar distribuicao publica por lista de permissao
         shell: bash
         run: |
