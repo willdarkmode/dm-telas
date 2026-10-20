@@ -17,7 +17,23 @@ const data=Array.from({length:7},(_,i)=>({
  DT_REF:iso(i),ARECEBER_DIA:100,APAGAR_DIA:-40,RECEBIDO_DIA:70,PAGO_DIA:-20,
  ARECEBER_ACUMULADO:100*(i+1),APAGAR_ACUMULADO:-40*(i+1),RECEBIDO_ACUMULADO:70*(i+1),
  PAGO_ACUMULADO:-20*(i+1),SALDO_ACUMULADO:60*(i+1)}));
-const execute=async sql=>{calls.push(sql);return sql.includes("OFFSET ")?[{NUFIN:789,NUMNOTA:21,NOMEPARC:"Teste",CODEMP:1,DTVENC:"20/10/2026",VALOR:100}]:data;};
+let longMode=false;
+const execute=async sql=>{
+ calls.push(sql);
+ if(sql.includes("OFFSET "))return [{NUFIN:789,NUMNOTA:21,NOMEPARC:"Teste",CODEMP:1,DTVENC:"20/10/2026",VALOR:100}];
+ if(!longMode)return data;
+ const dates=[...sql.matchAll(/'(\d{4}-\d{2}-\d{2})'/g)];
+ const start=dates[0][1],end=dates[1][1];
+ const days=Math.round((Date.parse(end)-Date.parse(start))/86400000)+1;
+ // Simula um conector que trunca qualquer resposta a 90 linhas.
+ return Array.from({length:Math.min(days,90)},(_,i)=>({
+   DT_REF:new Date(Date.parse(start)+i*86400000).toISOString().slice(0,10),
+   ARECEBER_DIA:100,APAGAR_DIA:-40,RECEBIDO_DIA:70,PAGO_DIA:-20,
+   ARECEBER_ACUMULADO:(i+1)*100,APAGAR_ACUMULADO:(i+1)*-40,
+   RECEBIDO_ACUMULADO:(i+1)*70,PAGO_ACUMULADO:(i+1)*-20,
+   SALDO_ACUMULADO:(i+1)*60
+ }));
+};
 w.GGProjecao.render({container:root,companies:[{CODEMP:1,NOMEFANTASIA:"Teste"}],selected:[1],execute,setSelected(){}});
 const click=(attribute,value)=>{
  const prop=attribute.replace("data-","").replace(/-([a-z])/g,(_,c)=>c.toUpperCase());
@@ -46,5 +62,12 @@ const wait=()=>new Promise(resolve=>setTimeout(resolve,25));
  change("data-ggpr-end","2028-10-20");click("data-ggpr-run");await wait();
  assert.match(panel.innerHTML,/intervalo máximo é de 730 dias/);
  assert.equal(calls.length,2,"Invalid range must not query database");
- console.log("PASS: datas personalizadas, limite 730, drilldown e NUFIN");
+ // Consulta 101 dias: backend devolve só 90 linhas. Deve reconsultar 90+11
+ // e recompor o saldo acumulado entre lotes (não zerar no segundo lote).
+ longMode=true;
+ change("data-ggpr-end",iso(100));
+ click("data-ggpr-run");await wait();
+ assert.equal(calls.length,5,"uma consulta inicial truncada e dois lotes de recuperação");
+ assert.match(panel.innerHTML,/6\.060,00/,"Saldo final deve somar os dois lotes");
+ console.log("PASS: datas personalizadas, limite 730, drilldown, NUFIN e fallback do conector");
 })().catch(e=>{console.error(e);process.exit(1)});
