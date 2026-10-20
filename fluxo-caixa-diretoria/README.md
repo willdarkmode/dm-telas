@@ -159,3 +159,18 @@ A homologação financeira entrou na etapa de comparação técnica da v0.8.0, *
 - **Próxima validação:** comparar as telas 380 e 465 no mesmo momento, com as mesmas empresas, e preencher as diferenças por indicador; depois migrar `grd_1BP` sem modificar a fórmula da projeção.
 
 A planilha privada de reconciliação contém abas de conferência 380 × 465, inventário das 26 SQLs, riscos e roteiro para testes. Ela não deve ser publicada no GitHub por conter totais financeiros extraídos do ambiente de produção.
+
+
+## v0.9.0 — Projeção por período personalizado e grade original (20/10/2026)
+
+Solicitação funcional prioritária do financeiro: consultar projeções para **datas inicial/final escolhidas livremente**, não apenas os 100 dias do gadget original.
+
+**Implementação:** inclusão na seção Principal de um novo bloco de projeção diária, com limites de 1 a **730 dias inclusivos**; atalhos para 30, 90, 100, 180, 365 e 730 dias; agrupamento visual diário, semanal (blocos de sete dias desde a data inicial) ou mensal; quadro sintético por período; gráfico de três séries acumuladas; drilldown em **A receber, A pagar, Recebido e Pago**, com títulos paginados (50) e abertura nativa por **NUFIN**. A consulta é executada apenas após clicar em Consultar período. O gráfico original de 100 dias continua executando a SQL `cht_1JA` sem alterações.
+
+**Fonte financeira:** preservados os filtros de TOP/natureza e empresas do gráfico original. A projeção dinâmica usa novas consultas de leitura, `GGFluxoPeriodoSQL.diario` e `GGFluxoPeriodoSQL.titulos`, disponibilizadas apenas no `principal.jsp` instalado no Sankhya. A grade legada `grd_1BP` também foi copiada literalmente do XML original para comparação **sob demanda**, sem execução automática. Todas as **22 consultas antigas permanecem idênticas**, confirmadas por igualdade do objeto JSON original entre v0.8.0 e v0.9.0. O repositório público contém somente a interface `js/projecao.js`/`css/projecao.css` e testes; não contém SQL de negócio real.
+
+**Interpretação financeira obrigatória:** o saldo calculado é o acumulado de títulos **em aberto** com vencimento dentro do período consultado (receber positivo; pagar negativo). Parte de **zero** na data inicial; **não** carrega saldo inicial bancário nem vencidos anteriores. Recebido/Pago são títulos baixados dentro do período classificados por `DHBAIXA` e usando `VLRDESDOB` — foram preservadas as regras financeiras do chart original, e essas séries são mostradas separadamente, sem compor o saldo projetado. A grade original de 100 dias tem regras próprias de fim de semana e intervalos e não é um equivalente matemático perfeito da nova visão diária.
+
+**Validação técnica até aqui:** consultas novas executaram no Oracle do Sankhya **somente leitura** (amostra diária de sete dias e título individual em intervalo), e teste de regressão automático verifica validade de datas, máximo de 730 dias e navegação NUFIN. A **execução de 365/730 dias no gadget 465 ainda depende da homologação do usuário**. A política de saldo de abertura, tratamento de atrasados e horizonte devem ser aprovados pelo financeiro antes de chamar isso de previsão de caixa integral.
+
+**Implantação:** exclusivamente gadget de homologação **465** com ZIP JSP v0.9.0 e entryPoint `principal.jsp`. Não modificar gadget original 380 ou dashboard 226. 
