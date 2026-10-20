@@ -220,3 +220,11 @@ Após importar a v0.9.1 no gadget de homologação **465**, o responsável captu
 Foi produzido um **ZIP de recuperação do v0.9.1** (distribuído somente no chat, sem publicar o JSP nem as SQLs no repositório). O novo carregador tenta primeiro os sete arquivos CSS e sete JS pelo Pages e, em caso de erro ou timeout, tenta os mesmos arquivos no espelho público jsDelivr. Os seis módulos JS independentes são carregados antes de `app.js`, e falhas persistentes geram aviso com arquivo e botão de repetição. **As 22 SQLs originais, a grade legada e as duas SQLs de período livre são byte a byte idênticas** às da versão entregue; a ponte `executeQuery` não mudou.
 
 Testes locais em ambiente de navegador simulado: (1) carregamento normal; (2) Pages indisponível e CDN respondendo; (3) ambos indisponíveis, exibindo informação de falha. Esses testes não substituem a homologação no gadget 465. Se ambos os domínios estiverem bloqueados na rede corporativa, hospedar os recursos estáticos no próprio ambiente Sankhya.
+
+## Confirmação de recuperação e simplificação — v0.9.1 (20/10/2026)
+
+O responsável confirmou que o **ZIP v0.9.1 de recuperação** carregou corretamente a interface no gadget de homologação **465**, após a falha anterior ao buscar os recursos estáticos, e avaliou a Principal com **uma única projeção aberta** como significativamente mais limpa e fácil de usar. O comparativo original de 100 dias permanece recolhido e sob demanda.
+
+A hipótese de instabilidade no GitHub Pages é plausível, **mas não foi tecnicamente comprovada**; o novo carregador conta com endereço alternativo e mensagem de diagnóstico. Preservar essa versão como referência operacional provisória. A conciliação financeira completa e a definição de política de saldo inicial/vencidos permanecem pendentes. O gadget original 380 e dashboard 226 não foram alterados.
+
+O registro não contém valores, nomes de parceiros ou títulos financeiros.
