@@ -212,3 +212,11 @@ O código mantém a ponte `executeQuery` e as demais sete seções. O JSP v0.9.1
 Regressões automatizadas: sem consulta automática de 100 dias na Principal; referência antiga consultada sob demanda; período livre, paginação e NUFIN mantidos. [Workflow completo validado](https://github.com/willdarkmode/dm-telas/actions/runs/39433211186).
 
 **Implantação:** instalar somente no gadget de homologação **465**, preservando backup da v0.9.0. Não alterar o gadget nativo 380 ou dashboard 226. Homologação visual desta organização ainda depende de captura do usuário, especialmente verificar que o gráfico legado não aparece sem expandir a comparação.
+
+## Correção de carregamento da v0.9.1 — pacote de recuperação (20/10/2026)
+
+Após importar a v0.9.1 no gadget de homologação **465**, o responsável capturou a mensagem "Não foi possível carregar a interface do GitHub Pages. Confira a publicação de js/app.js." A imagem também estava sem os estilos CSS, indicando possível dificuldade para buscar os recursos estáticos. O workflow da v0.9.1 estava publicado com sucesso, e os caminhos externos no JSP foram conferidos; **não é possível afirmar se a causa foi rede, cache, bloqueio de domínio ou falha transitória sem diagnóstico no navegador**.
+
+Foi produzido um **ZIP de recuperação do v0.9.1** (distribuído somente no chat, sem publicar o JSP nem as SQLs no repositório). O novo carregador tenta primeiro os sete arquivos CSS e sete JS pelo Pages e, em caso de erro ou timeout, tenta os mesmos arquivos no espelho público jsDelivr. Os seis módulos JS independentes são carregados antes de `app.js`, e falhas persistentes geram aviso com arquivo e botão de repetição. **As 22 SQLs originais, a grade legada e as duas SQLs de período livre são byte a byte idênticas** às da versão entregue; a ponte `executeQuery` não mudou.
+
+Testes locais em ambiente de navegador simulado: (1) carregamento normal; (2) Pages indisponível e CDN respondendo; (3) ambos indisponíveis, exibindo informação de falha. Esses testes não substituem a homologação no gadget 465. Se ambos os domínios estiverem bloqueados na rede corporativa, hospedar os recursos estáticos no próprio ambiente Sankhya.
