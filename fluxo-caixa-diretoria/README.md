@@ -191,3 +191,11 @@ Captura do gadget de homologação **465** mostra o novo módulo **Planejamento 
 **Status:** prova visual de funcionamento da consulta e gráfico para 365 dias, que atende ao requisito de horizonte superior a 100 dias solicitado pelo time financeiro. A imagem não comprova, por si só, paridade de todas as regras com a consulta antiga, nem detalhamento funcional dentro da nova projeção. **Próximo teste:** rolar até **Composição por período**, clicar em uma semana, conferir abas A receber/A pagar e abrir um NUFIN de título conhecido. Testes para datas livres não predefinidas e 730 dias permanecem adicionais.
 
 **Importante:** a projeção parte de zero na data inicial, não inclui saldos bancários de abertura, vencidos anteriores nem previsões de movimentos não cadastrados. Não publicar números monetários, nomes ou títulos extraídos das capturas no repositório público. Nenhuma mudança de gadget foi realizada por esta documentação.
+
+## Evidência visual v0.9.0 — composição semanal e títulos (20/10/2026)
+
+O responsável enviou capturas do gadget de homologação **465**, mostrando a grade **Composição por período** preenchida por semanas e, após selecionar a primeira semana, a grade **Títulos** com as categorias A receber, A pagar, Recebido e Pago. A tabela de títulos mostra NUFIN acionável, número da nota, parceiro, empresa, vencimento, baixa e valor. Foi visualizada a paginação de 50 títulos por consulta. Não foram apresentados erros nessas telas.
+
+**Ponto a conferir:** o rodapé da tabela de composição mostra **15 períodos semanais**, compatíveis com aproximadamente 100 dias. A captura anterior da projeção principal mostrou 365 dias. Isso pode decorrer de execuções diferentes, portanto não presumir truncamento nem homologar a composição de 365 dias até confirmar que, com esse intervalo ativo, o quadro apresenta aproximadamente 53 períodos semanais. A abertura pelo NUFIN do módulo personalizado também aguarda teste do clique no título correto; o recurso equivalente nas abas Pendentes já foi validado.
+
+Não publicar os nomes, NUFINs ou valores financeiros presentes nas imagens no repositório público. O gadget 380 e o dashboard 226 continuam preservados.
