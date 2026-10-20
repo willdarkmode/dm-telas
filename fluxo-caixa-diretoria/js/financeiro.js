@@ -32,8 +32,8 @@ function card(spec){
  '<span>Pendentes <b>'+(!err&&r?money(field(r,"PENDENTES")):"—")+'</b></span></div>'+
  (err?'<p class="ggf-error">'+esc(err)+'</p>':'')+'</article>';
 }
-function series(){
- const x=st.rows.cht_1JA; if(!Array.isArray(x))return [];
+function series(input){
+ const x=input; if(!Array.isArray(x))return [];
  return x.filter(r=>order.includes(String(r.PERIODO))).sort((a,b)=>order.indexOf(a.PERIODO)-order.indexOf(b.PERIODO));
 }
 function plot(rows){
@@ -68,14 +68,11 @@ function table(rows){
 function paint(){
  if(!st.ctx)return;
  if(window.GGFluxoCaixa && window.GGFluxoCaixa.getCurrentPage()!=="078")return;
- const rows=series(),err=st.errors.cht_1JA;
  st.ctx.container.innerHTML='<section class="gg-panel ggf-filter"><div><div class="gg-kicker">EMPRESAS SELECIONADAS</div><div class="ggf-companies">'+
  st.ctx.companies.map(c=>'<label class="gg-check"><input type="checkbox" class="ggf-company" value="'+Number(c.CODEMP)+'"'+(st.ctx.selected.includes(Number(c.CODEMP))?" checked":"")+'><span>'+esc(c.NOMEFANTASIA)+' <small>('+Number(c.CODEMP)+')</small></span></label>').join("")+
  '</div></div><button class="gg-button" type="button" data-ggf-apply'+(st.loading?' disabled':'')+'>Aplicar filtro</button></section>'+
  '<div class="ggf-heading"><div class="gg-kicker">INDICADORES ORIGINAIS · GADGET 380</div><h2>Receitas e despesas</h2><p>Períodos originais, sujeitos a conciliação financeira.</p></div>'+
  '<div class="ggf-cards">'+specs.map(card).join("")+'</div>'+
- '<div class="ggf-heading"><div class="gg-kicker">FLUXO ACUMULADO · 100 DIAS</div><h2>Projeção financeira</h2><p>Sem saldo inicial das contas bancárias.</p></div>'+
- '<section class="gg-panel">'+(err?'<p class="ggf-error">'+esc(err)+'</p>':st.loading&&!st.rows.cht_1JA?'<p>Consultando projeção…</p>':plot(rows)+table(rows))+'</section>'+
  '<p class="ggf-status" role="status">'+(st.loading?'Consultando Sankhya…':'Homologação pendente: comparar os resultados com o gadget 380.')+'</p>';
  if (window.GGProjecao && typeof window.GGProjecao.render === 'function') window.GGProjecao.render(st.ctx);
  if (window.GGPrincipalExtras && typeof window.GGPrincipalExtras.render === 'function') window.GGPrincipalExtras.render(st.ctx);
@@ -84,7 +81,7 @@ async function load(){
  if(!st.ctx||st.loading||!st.ctx.selected.length)return;
  const serial=++st.version;
  st.loading=true;st.rows={};st.errors={};paint();
- for(const id of [...specs.map(x=>x[0]),"cht_1JA"]){
+ for(const id of specs.map(x=>x[0])){
   try { const result=await st.ctx.execute(sql(id));if(serial!==st.version)return;st.rows[id]=Array.isArray(result)?result:[]; }
   catch(e){if(serial===st.version)st.errors[id]=String(e&&e.message||e);}
   paint();
@@ -99,7 +96,8 @@ function click(ev){
  st.ctx.selected=selected;st.ctx.setSelected(selected);load();
 }
 window.GGFinancePrincipal={
- version:"0.9.0",
+ version:"0.9.1",
+ legacyPreview(rows){const list=series(rows);return plot(list)+table(list);},
  render(args){st.ctx=args;if(st.root!==args.container){if(st.root)st.root.removeEventListener("click",click);st.root=args.container;st.root.addEventListener("click",click);}paint();},
  load
 };
