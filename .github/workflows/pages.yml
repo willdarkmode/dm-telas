@@ -9,6 +9,7 @@ on:
       - "fluxo-caixa-diretoria/css/pendentes.css"
       - "fluxo-caixa-diretoria/css/centros.css"
       - "fluxo-caixa-diretoria/css/mensal.css"
+      - "fluxo-caixa-diretoria/css/projecao.css"
       - "fluxo-caixa-diretoria/js/app.js"
       - "fluxo-caixa-diretoria/js/financeiro.js"
       - "fluxo-caixa-diretoria/js/principal-extras.js"
@@ -16,6 +17,7 @@ on:
       - "fluxo-caixa-diretoria/tests/pendentes-nufin.cjs"
       - "fluxo-caixa-diretoria/js/centros.js"
       - "fluxo-caixa-diretoria/js/mensal.js"
+      - "fluxo-caixa-diretoria/js/projecao.js"
       - "fluxo-caixa-diretoria/index.html"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
@@ -48,6 +50,7 @@ jobs:
           node fluxo-caixa-diretoria/tests/pendentes-nufin.cjs
           node --check fluxo-caixa-diretoria/js/centros.js
           node --check fluxo-caixa-diretoria/js/mensal.js
+          node --check fluxo-caixa-diretoria/js/projecao.js
       - name: Criar distribuicao publica por lista de permissao
         shell: bash
         run: |
@@ -59,12 +62,14 @@ jobs:
           cp fluxo-caixa-diretoria/css/pendentes.css public-site/fluxo-caixa-diretoria/css/pendentes.css
           cp fluxo-caixa-diretoria/css/centros.css public-site/fluxo-caixa-diretoria/css/centros.css
           cp fluxo-caixa-diretoria/css/mensal.css public-site/fluxo-caixa-diretoria/css/mensal.css
+          cp fluxo-caixa-diretoria/css/projecao.css public-site/fluxo-caixa-diretoria/css/projecao.css
           cp fluxo-caixa-diretoria/js/app.js public-site/fluxo-caixa-diretoria/js/app.js
           cp fluxo-caixa-diretoria/js/financeiro.js public-site/fluxo-caixa-diretoria/js/financeiro.js
           cp fluxo-caixa-diretoria/js/principal-extras.js public-site/fluxo-caixa-diretoria/js/principal-extras.js
           cp fluxo-caixa-diretoria/js/pendentes.js public-site/fluxo-caixa-diretoria/js/pendentes.js
           cp fluxo-caixa-diretoria/js/centros.js public-site/fluxo-caixa-diretoria/js/centros.js
           cp fluxo-caixa-diretoria/js/mensal.js public-site/fluxo-caixa-diretoria/js/mensal.js
+          cp fluxo-caixa-diretoria/js/projecao.js public-site/fluxo-caixa-diretoria/js/projecao.js
           cp fluxo-caixa-diretoria/index.html public-site/fluxo-caixa-diretoria/index.html
           printf '%s\n' '<!doctype html><html lang="pt-BR"><meta charset="utf-8"><title>GoldenGear — telas</title><body><h1>GoldenGear — Telas HTML5</h1><p>Recursos publicos para componentes Sankhya.</p></body></html>' > public-site/index.html
           touch public-site/.nojekyll
