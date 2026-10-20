@@ -122,3 +122,17 @@ O responsável enviou capturas da execução das telas **Receitas por mês** e *
 O XML original inclui a ação nativa `<on-click-launcher resource-id="br.com.sankhya.fin.cad.movimentacaoFinanceira"><NUFIN>$NUFIN</NUFIN></on-click-launcher>` nas grades de títulos `grd_0LW` e `grd_06I`. Essa é a referência semântica para a futura navegação HTML5; **não assumir** a assinatura da API JavaScript sem validação no Sankhya.
 
 **Segurança:** não incluir saldos bancários, títulos, nomes de colaboradores ou detalhes financeiros das capturas neste repositório público. O código de visualização público deve permanecer sem SQL sensível ou credenciais.
+
+## v0.8.0 — Navegação nativa por NUFIN (20/10/2026)
+
+O responsável confirmou no gadget **465** que a opção **Ver 12 meses** funciona nas duas telas mensais (Receitas por mês e Despesas por mês). Validação visual e interação confirmadas; conciliação com gadget 380 ainda pendente.
+
+**Nova integração:** as seções Receitas Pendentes (20O) e Despesas Pendentes (06B) exibem o NUFIN como botão para solicitar a abertura da tela nativa `br.com.sankhya.fin.cad.movimentacaoFinanceira`. A chamada `openApp(resource, {NUFIN: número})` parte apenas de clique do usuário, aceita somente código inteiro positivo e tenta localizar a função no contexto atual ou nos contêineres acessíveis do Sankhya. Se a função não estiver acessível ou lançar exceção, a tela informa o motivo e mantém o botão **Copiar** para pesquisa manual.
+
+A sintaxe de `openApp(id_da_tela, parâmetros)` é indicada pela [documentação oficial de eventos de click](https://developer.sankhya.com.br/docs/eventos-de-click-no-ireport), mas a integração HTML5 e o posicionamento exato da tela financeira **ainda precisam ser testados no Sankhya do cliente**. Uma chamada sem exceção não comprova que a navegação terminou no título correto.
+
+O módulo visual `js/pendentes.js`, o estilo `css/pendentes.css` e o teste `tests/pendentes-nufin.cjs` foram versionados e passam no [workflow de publicação e teste](https://github.com/willdarkmode/dm-telas/actions/runs/39415920202). Nenhum SQL financeiro foi publicado no Pages.
+
+**JSP v0.8.0:** fornecido somente como ZIP na conversa; é uma cópia da v0.7.0 com a versão de cache das 13 URLs CSS/JS atualizada de `0.7.0` para `0.8.0` e o indicador visual da versão. As **22 consultas originais** são exatamente as mesmas (comparação do objeto `GGFluxoOriginalSQL`). Reinstalar somente no gadget de testes 465, sem alterar o XML.
+
+**Atenção:** a funcionalidade navega para a tela nativa, não efetua alterações nem baixa títulos. Testar primeiro com título já conhecido e usuário autorizado; garantir que o registro aberto corresponda ao NUFIN selecionado, sem editar ou baixar.
