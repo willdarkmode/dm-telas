@@ -13,6 +13,7 @@ on:
       - "fluxo-caixa-diretoria/js/financeiro.js"
       - "fluxo-caixa-diretoria/js/principal-extras.js"
       - "fluxo-caixa-diretoria/js/pendentes.js"
+      - "fluxo-caixa-diretoria/tests/pendentes-nufin.cjs"
       - "fluxo-caixa-diretoria/js/centros.js"
       - "fluxo-caixa-diretoria/js/mensal.js"
       - "fluxo-caixa-diretoria/index.html"
@@ -44,6 +45,7 @@ jobs:
           node --check fluxo-caixa-diretoria/js/financeiro.js
           node --check fluxo-caixa-diretoria/js/principal-extras.js
           node --check fluxo-caixa-diretoria/js/pendentes.js
+          node fluxo-caixa-diretoria/tests/pendentes-nufin.cjs
           node --check fluxo-caixa-diretoria/js/centros.js
           node --check fluxo-caixa-diretoria/js/mensal.js
       - name: Criar distribuicao publica por lista de permissao
