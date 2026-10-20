@@ -141,6 +141,6 @@ O módulo visual `js/pendentes.js`, o estilo `css/pendentes.css` e o teste `test
 
 O responsável testou o clique em um `NUFIN` a partir do gadget de testes **465** e confirmou que o Sankhya abriu a tela nativa de **Movimentações Financeiras**. A navegação via `openApp()` está, portanto, **operacional quanto à abertura da tela** no ambiente real.
 
-**Verificação ainda pendente:** confirmar que a tela abriu especificamente no registro `NUFIN` clicado (e não somente no módulo geral) e que as permissões e o comportamento de abertura são adequados. O usuário descreveu o resultado como aparentemente correto; não registrar homologação total até essa comparação.
+**Validação confirmada em 20/10/2026:** o responsável selecionou uma nota pelo `NUFIN` no gadget 465 e confirmou que o Sankhya abriu **exatamente o título selecionado** na tela nativa de Movimentações Financeiras. A navegação contextual por `NUFIN` fica homologada para o cenário testado, sem edição ou baixa do título. As permissões devem continuar sendo respeitadas para cada usuário.
 
 A portabilidade das sete seções e o botão `Ver 12 meses` já tiveram execução visual confirmada. A conciliação dos valores financeiros do **465** com o gadget original **380** permanece em aberto. Não alterar o gadget **380** ou dashboard **226**.
