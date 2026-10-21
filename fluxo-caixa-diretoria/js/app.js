@@ -1,4 +1,4 @@
-/* GoldenGear Fluxo de Caixa — inicialização Pages v0.9.1.
+/* P&R Automação Industrial · Fluxo de Caixa — interface Pages v0.9.2.
    Interface pública; as consultas financeiras originais ficam no JSP do Sankhya. */
 (function () {
   "use strict";
@@ -31,15 +31,34 @@
   }
   root.innerHTML =
     '<div class="gg-frame"><aside class="gg-side">'+
-      '<div class="gg-brand"><span class="gg-mark">G</span><div><strong>GoldenGear</strong><small>GESTÃO FINANCEIRA</small></div></div>'+
-      '<div class="gg-side-caption">FLUXO DE CAIXA</div><nav id="gg-menu" aria-label="Seções do painel"></nav>'+
-      '<div class="gg-side-bottom"><span class="gg-pulse"></span> HTML5 Pages · v0.9.1<br><small>Homologação no gadget 465</small></div>'+
+      '<div class="gg-brand"><span class="gg-brand-logo"><span class="gg-brand-fallback">P&R</span><img id="gg-brand-logo" alt="" aria-hidden="true" /></span><div class="gg-brand-copy"><strong>P&R Automação Industrial</strong><small>Fluxo de Caixa - Diretoria</small></div></div>'+
+      '<div class="gg-side-caption">NAVEGAÇÃO</div><nav id="gg-menu" aria-label="Seções do painel"></nav>'+
+      '<div class="gg-side-bottom"><span class="gg-pulse"></span> Sankhya HTML5 · v0.9.2<br><small>Ambiente de validação · 465</small></div>'+
     '</aside><main class="gg-main">'+
-      '<header class="gg-head"><div><div class="gg-eyebrow">DIRETORIA / SANKHYA</div><h1 id="gg-title">Fluxo de Caixa — Diretoria</h1><p id="gg-subtitle"></p></div>'+
+      '<header class="gg-head"><div><div class="gg-eyebrow">DIRETORIA / SANKHYA</div><h1 id="gg-title">Fluxo de Caixa - Diretoria</h1><p id="gg-subtitle"></p></div>'+
       '<button type="button" class="gg-refresh" id="gg-refresh">↻ Atualizar</button></header>'+
-      '<section class="gg-info"><strong>Em homologação financeira.</strong> Os valores são consultados no Sankhya e seguem as regras específicas do XML original. Compare-os ao gadget 380 antes do uso gerencial; algumas seções continuam em migração.</section>'+
-      '<div id="gg-body"></div><footer>GoldenGear · Sankhya HTML5 · Somente leitura</footer>'+
+      '<section class="gg-info"><strong>Dados do Sankhya.</strong> Confira empresas, datas e critérios de projeção antes de utilizar os indicadores. A conciliação financeira final permanece em validação.</section>'+
+      '<div id="gg-body"></div><footer>P&R Automação Industrial · Fluxo de Caixa - Diretoria · Somente leitura</footer>'+
     '</main></div>';
+  // Logo oficial espelhado pelo Pages; fallback ao endereço fornecido pela P&R.
+  // Sem dependência de imagens para inicializar consultas ou navegação.
+  (function loadBrandLogo(){
+    const img=document.getElementById("gg-brand-logo");
+    if(!img)return;
+    const sources=[
+      "https://willdarkmode.github.io/dm-telas/fluxo-caixa-diretoria/assets/logo-pr.svg?v=0.9.2",
+      "https://recursos.perautomacao.com.br/i/catus/logo_R.svg"
+    ];
+    let index=0;
+    img.addEventListener("load",()=>{img.style.visibility="visible";});
+    img.addEventListener("error",()=>{
+      img.style.visibility="hidden";
+      index++;
+      if(index<sources.length)img.src=sources[index];
+      // A marca P&R em texto permanece visível se nenhum endereço responder.
+    });
+    img.src=sources[index];
+  })();
   const byId = id => document.getElementById(id);
   function menu() {
     byId("gg-menu").innerHTML = pages.map(p=>'<button type="button" data-page="'+p.id+'" class="gg-nav-item'+(state.page===p.id?" active":"")+'">'+escapeHtml(p.title)+'</button>').join("");
@@ -47,7 +66,7 @@
   function render() {
     menu();
     const page = pages.find(x=>x.id===state.page) || pages[0];
-    byId("gg-title").textContent = page.id==="078" ? "Fluxo de Caixa — Diretoria" : page.title;
+    byId("gg-title").textContent = page.id==="078" ? "Fluxo de Caixa - Diretoria" : page.title;
     byId("gg-subtitle").textContent=page.subtitle;
     if (page.id!=="078") {
       if ((page.id==="20P" || page.id==="41W") && window.GGMensal) {
@@ -147,6 +166,6 @@
       financialCount();
     }
   });
-  window.GGFluxoCaixa={version:"0.9.1",openSection:id=>{state.page=id;render();},getCurrentPage:()=>state.page,reload:loadCompanies,runSQL:query,getCompanies:()=>state.companies.slice(),getSelected:()=>state.selected.slice()};
+  window.GGFluxoCaixa={version:"0.9.2",openSection:id=>{state.page=id;render();},getCurrentPage:()=>state.page,reload:loadCompanies,runSQL:query,getCompanies:()=>state.companies.slice(),getSelected:()=>state.selected.slice()};
   loadCompanies();
 })();
