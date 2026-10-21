@@ -64,7 +64,7 @@
    '<div class="ggp-scroll"><table class="ggp-table"><thead><tr><th>Período</th><th>'+ (page==="20O"?"A receber":"A pagar")+'</th><th>Vencido</th><th>A vencer</th></tr></thead><tbody>'+periods+'</tbody></table></div>')+
    '</section><section class="gg-panel ggp-titles"><h3>Títulos '+(st.period?'— '+esc(st.period):'por período')+'</h3>'+
    '<p class="ggp-helper">Paginação no Oracle: 50 títulos por página. Clique no NUFIN para solicitar a abertura da Movimentação Financeira; use Copiar se precisar localizar o título manualmente.</p>'+
-   (st.period?'<div class="ggp-launch-message" role="status" aria-live="polite">'+esc(st.launchMessage||"Abertura nativa em homologação: confirme a tela e o NUFIN antes de qualquer alteração financeira.")+'</div>':'')+
+   (st.period?'<div class="ggp-launch-message" role="status" aria-live="polite">'+esc(st.launchMessage||"Ao abrir um título, confira o NUFIN na Movimentação Financeira antes de qualquer alteração.")+'</div>':'')+
    (st.detailError?'<p class="ggp-error">'+esc(st.detailError)+'</p>':st.detailLoading?'<p>Carregando títulos…</p>':
    st.period?'<div class="ggp-scroll"><table class="ggp-table"><thead><tr><th>NUFIN</th><th>Nota</th><th>Parceiro</th><th>Vencimento</th><th>Valor</th><th>Status</th></tr></thead><tbody>'+
    (titles||'<tr><td colspan="6">Nenhum título neste período.</td></tr>')+'</tbody></table></div>':
@@ -116,7 +116,7 @@ function openFinancial(page,index){
  }
  try{
    launch.call(host,nativeFinancialResource,{NUFIN:id});
-   st.launchMessage="Solicitação de abertura enviada para o NUFIN "+id+". Verifique se o Sankhya abriu o título correto; a navegação ainda está em homologação.";
+   st.launchMessage="Solicitação de abertura enviada para o NUFIN "+id+". Confira se o Sankhya abriu o título correto.";
  }catch(err){
    st.launchMessage="Não foi possível solicitar abertura do NUFIN "+id+": "+String(err&&err.message||err)+". Use Copiar e abra a Movimentação Financeira manualmente.";
  }
