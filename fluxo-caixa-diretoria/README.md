@@ -238,3 +238,19 @@ Preparação da tela para testes assistidos com o time financeiro. Alterações 
 **JSP:** ZIP v0.9.2 derivado do **pacote de recuperação v0.9.1** (o que o usuário confirmou funcionar), com atualização somente de título/texto de carregamento e versão do cache `?v=0.9.2-pr1`. As 22 definições SQL iniciais, a consulta da grade legada `grd_1BP` e as duas consultas de período livre foram preservadas **literalmente**. Continua a recuperação de scripts e CSS via `GitHub Pages → jsDelivr`, testada anteriormente.
 
 **Validação:** [workflow completo de publicação e regressões](https://github.com/willdarkmode/dm-telas/actions/runs/39646626005) aprovado. A identidade P&R será considerada validada visualmente somente após importação e captura do gadget 465. **Não modificar gadgets 380/226**. A abertura para usuários finais é uma liberação assistida; saldos, datas fixas legadas e regras de previsão financeira ainda requerem aprovação do financeiro antes de usar os resultados para decisão gerencial.
+
+
+## Investigação: tela independente sem painel lateral do BI — Projeto de Produção (21/10/2026)
+
+O usuário indicou a tela nativa personalizada **Projeto de Produção** como exemplo de uma tela que, segundo sua experiência, não exibe o painel de filtros que surge ao aproximar o mouse no gadget 465.
+
+Leitura em `TDDINS` confirmou cadastro da tela **AD_PROJPROD**, instância `9999990049`, descrição **Projeto de Produção**, recurso `br.com.sankhya.menu.adicional.AD_PROJPROD`, `ADICIONAL=S`, `ATIVO=S`, categoria ETO, descrição versão 2.0. Também há duas instâncias antigas com mesma identificação lógica mas descritas como "arquivado" (IDs 9999990068, 9999990069), apesar de seu flag ATIVO; não modificá-las nem reutilizar identificadores. Trata-se de **tela adicional/formulário**, diferente do gadget de BI `465` com `html5component entryPoint="principal.jsp"`.
+
+A documentação Sankhya diferencia:
+- **Construtor de Telas**: instância adicional e lançador no menu.
+- **Add-on Studio**: tela personalizada `.xhtml5` registrada por `<ui>` no dicionário de menus.
+- **BI**: visualizador de gadgets, que exibe barra nativa de controle.
+
+**Hipótese:** a ausência do painel decorre da abertura como lançador de tela de cadastro e não no visualizador BI. Não foi confirmado por captura da tela Projeto de Produção nem pela inspeção da configuração do menu. **Não é seguro afirmar que a UI atual possa ser reutilizada diretamente**: a ponte `snk:load` + `executeQuery` foi validada apenas no contexto do componente BI; em tela independente deve ser substituída/validada com APIs suportadas e autenticação do ambiente.
+
+**Prova de conceito futura (ambiente isolado):** criar novo menu/tela sem reutilizar resource ID do Projeto de Produção ou substituir 465; testar consulta mínima read-only, filtros empresa, projeção por data e `openApp({NUFIN})`; depois avaliar performance/permissões e somente então migrar. Preservar gadgets 380 e 465, e dashboard 226.
