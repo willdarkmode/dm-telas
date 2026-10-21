@@ -104,7 +104,7 @@ function paint(page){
  '<p>Regras, naturezas e períodos preservados do gadget original 380. Valores aguardam conferência financeira.</p></div>'+
  '<button type="button" class="gg-button" data-gcc-refresh>Atualizar</button></header>'+filters(page)+
  '<div class="gcc-columns">'+ranking(page)+details(page)+'</div>'+
- '<p class="gcc-footer">GoldenGear · Apenas leitura · Gadget de homologação 465 · O lançamento financeiro por NUFIN não faz parte destas consultas agregadas.</p>';
+ '<p class="gcc-footer">P&R Automação Industrial · Somente leitura · Valores agregados por centro de custo.</p>';
 }
 async function load(page,force){
  const ctx=contexts[page],st=state(page);if(!ctx||st.loading||!ctx.companies.length)return;
