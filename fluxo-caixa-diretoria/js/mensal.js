@@ -122,7 +122,7 @@ function paint(page){
  const nav=MONTHS.map((m,i)=>'<button data-ggm-month="'+i+'" type="button" class="'+(st.month===i?"active":"")+'">'+m[0]+'</button>').join("");
  c.container.innerHTML=
  '<header class="gg-panel ggm-header"><div><div class="gg-kicker">FLUXO DE CAIXA · EXERCÍCIO ORIGINAL 2025</div>'+
- '<h2>'+esc(conf.title)+'</h2><p>Baixas registradas de janeiro a dezembro de 2025. Valores aguardam conciliação com o gadget 380.</p></div>'+
+ '<h2>'+esc(conf.title)+'</h2><p>Baixas registradas de janeiro a dezembro de 2025, conforme as regras financeiras do Sankhya.</p></div>'+
  '<button type="button" data-ggm-refresh class="gg-button"'+(st.loading?' disabled':'')+'>Atualizar</button></header>'+
  '<section class="gg-panel ggm-filters"><div><div class="gg-kicker">EMPRESAS</div><div class="ggm-company-list">'+companyHTML+
  '</div></div><button type="button" data-ggm-apply class="gg-button"'+(st.loading?' disabled':'')+'>Aplicar filtro</button></section>'+
