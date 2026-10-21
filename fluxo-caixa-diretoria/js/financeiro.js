@@ -71,9 +71,9 @@ function paint(){
  st.ctx.container.innerHTML='<section class="gg-panel ggf-filter"><div><div class="gg-kicker">EMPRESAS SELECIONADAS</div><div class="ggf-companies">'+
  st.ctx.companies.map(c=>'<label class="gg-check"><input type="checkbox" class="ggf-company" value="'+Number(c.CODEMP)+'"'+(st.ctx.selected.includes(Number(c.CODEMP))?" checked":"")+'><span>'+esc(c.NOMEFANTASIA)+' <small>('+Number(c.CODEMP)+')</small></span></label>').join("")+
  '</div></div><button class="gg-button" type="button" data-ggf-apply'+(st.loading?' disabled':'')+'>Aplicar filtro</button></section>'+
- '<div class="ggf-heading"><div class="gg-kicker">INDICADORES ORIGINAIS · GADGET 380</div><h2>Receitas e despesas</h2><p>Períodos originais, sujeitos a conciliação financeira.</p></div>'+
+ '<div class="ggf-heading"><div class="gg-kicker">VISÃO FINANCEIRA · DIRETORIA</div><h2>Receitas e despesas</h2><p>Valores consultados no Sankhya para as empresas selecionadas.</p></div>'+
  '<div class="ggf-cards">'+specs.map(card).join("")+'</div>'+
- '<p class="ggf-status" role="status">'+(st.loading?'Consultando Sankhya…':'Homologação pendente: comparar os resultados com o gadget 380.')+'</p>';
+ (st.loading?'<p class="ggf-status" role="status">Consultando Sankhya…</p>':'');
  if (window.GGProjecao && typeof window.GGProjecao.render === 'function') window.GGProjecao.render(st.ctx);
  if (window.GGPrincipalExtras && typeof window.GGPrincipalExtras.render === 'function') window.GGPrincipalExtras.render(st.ctx);
 }
