@@ -282,3 +282,12 @@ Decisão de escopo: **não tentar ocultar por manipulação de DOM a barra later
 5. **Piloto:** liberar a um pequeno grupo autorizado do financeiro, coletar feedback e erros antes de apresentar como produção definitiva. Mostrar claramente que a projeção parte de zero e exclui saldo bancário inicial e títulos vencidos anteriores.
 
 **Ambiente:** todas as alterações e testes continuam no gadget 465; não modificar o gadget 380, dashboard 226 ou a tela Projeto de Produção. O roadmap posterior inclui saldo inicial e disponibilidade de caixa, filtros inteligentes, cenários e relatórios.
+
+
+## Preparação do piloto financeiro v1.0 — acesso controlado (21/10/2026)
+
+Iniciada a revisão pré-lançamento, **sem modificar o gadget 465 nem o legado 380**. Procedimento de controle de acesso e verificações de segurança/funcionamento em [RELEASE_V1_PILOTO.md](./RELEASE_V1_PILOTO.md).
+
+O JSP privativo da v0.9.2 foi auditado. A SQL `grd_2OZ` da aba Salários CC contém CODEMP em expressões de cálculo, mas não na cláusula WHERE; portanto não respeita o escopo de empresa selecionado. Foi preparado um ZIP privado **v1.0 RC1** para teste no 465 que adiciona somente `AND FIN.CODEMP IN :CODEMP` ao WHERE dessa consulta, com verificação automatizada de igualdade das demais 21 SQLs originais, duas SQLs de período livre e do carregador de recursos. Não publicar JSP nem detalhes pessoais no repositório.
+
+**Restrição obrigatória:** o filtro por empresa **não constitui autorização**. A liberação real depende do lançador do dashboard, da tela Acessos e de teste com usuário sem permissão, inclusive tentativa de acesso direto. A aba de salário contém dados pessoais e não deve ser disponibilizada a perfis de financeiro sem autorização específica de folha/RH. A v0.9.2 permanece referência funcional e o RC1 não foi implantado automaticamente.
