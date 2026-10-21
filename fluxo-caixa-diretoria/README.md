@@ -228,3 +228,13 @@ O responsável confirmou que o **ZIP v0.9.1 de recuperação** carregou corretam
 A hipótese de instabilidade no GitHub Pages é plausível, **mas não foi tecnicamente comprovada**; o novo carregador conta com endereço alternativo e mensagem de diagnóstico. Preservar essa versão como referência operacional provisória. A conciliação financeira completa e a definição de política de saldo inicial/vencidos permanecem pendentes. O gadget original 380 e dashboard 226 não foram alterados.
 
 O registro não contém valores, nomes de parceiros ou títulos financeiros.
+
+## v0.9.2 — Pré-lançamento P&R Automação Industrial (21/10/2026)
+
+Preparação da tela para testes assistidos com o time financeiro. Alterações **exclusivamente de marca, aparência e textos**: logotipo corporativo indicado pela P&R, nome lateral `P&R Automação Industrial`, subtítulo e título `Fluxo de Caixa - Diretoria`, rodapé corporativo e revisão de rótulos/avisos repetitivos. O banner continua informando que a **conciliação financeira final está em validação**.
+
+**Logotipo:** no deploy do Pages, o arquivo oficial `https://recursos.perautomacao.com.br/i/catus/logo_R.svg` foi obtido e validado como SVG, depois espelhado em `fluxo-caixa-diretoria/assets/logo-pr.svg` (conforme log do workflow). A interface tenta primeiro o espelho do Pages, depois o URL original e, se ambos falharem, exibe `P&R` em texto; a marca não é pré-requisito para carregar consultas. O asset é publicado pelo workflow, não contém código SQL.
+
+**JSP:** ZIP v0.9.2 derivado do **pacote de recuperação v0.9.1** (o que o usuário confirmou funcionar), com atualização somente de título/texto de carregamento e versão do cache `?v=0.9.2-pr1`. As 22 definições SQL iniciais, a consulta da grade legada `grd_1BP` e as duas consultas de período livre foram preservadas **literalmente**. Continua a recuperação de scripts e CSS via `GitHub Pages → jsDelivr`, testada anteriormente.
+
+**Validação:** [workflow completo de publicação e regressões](https://github.com/willdarkmode/dm-telas/actions/runs/39646626005) aprovado. A identidade P&R será considerada validada visualmente somente após importação e captura do gadget 465. **Não modificar gadgets 380/226**. A abertura para usuários finais é uma liberação assistida; saldos, datas fixas legadas e regras de previsão financeira ainda requerem aprovação do financeiro antes de usar os resultados para decisão gerencial.
