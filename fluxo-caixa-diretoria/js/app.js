@@ -31,7 +31,7 @@
   }
   root.innerHTML =
     '<div class="gg-frame"><aside class="gg-side">'+
-      '<div class="gg-brand"><span class="gg-brand-logo"><span class="gg-brand-fallback">P&R</span><img id="gg-brand-logo" alt="" aria-hidden="true" /></span><div class="gg-brand-copy"><strong>P&R Automação Industrial</strong><small>Fluxo de Caixa - Diretoria</small></div></div>'+
+      '<div class="gg-brand"><span class="gg-brand-logo"><span class="gg-brand-fallback"></span><img id="gg-brand-logo" alt="" aria-hidden="true" /></span><div class="gg-brand-copy"><strong>P&R Automação Industrial</strong><small>Fluxo de Caixa - Diretoria</small></div></div>'+
       '<div class="gg-side-caption">NAVEGAÇÃO</div><nav id="gg-menu" aria-label="Seções do painel"></nav>'+
       '<div class="gg-side-bottom"><span class="gg-pulse"></span> Sankhya HTML5 · v0.9.2<br><small>Ambiente de validação · 465</small></div>'+
     '</aside><main class="gg-main">'+
