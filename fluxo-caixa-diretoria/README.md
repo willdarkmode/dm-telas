@@ -254,3 +254,16 @@ A documentação Sankhya diferencia:
 **Hipótese:** a ausência do painel decorre da abertura como lançador de tela de cadastro e não no visualizador BI. Não foi confirmado por captura da tela Projeto de Produção nem pela inspeção da configuração do menu. **Não é seguro afirmar que a UI atual possa ser reutilizada diretamente**: a ponte `snk:load` + `executeQuery` foi validada apenas no contexto do componente BI; em tela independente deve ser substituída/validada com APIs suportadas e autenticação do ambiente.
 
 **Prova de conceito futura (ambiente isolado):** criar novo menu/tela sem reutilizar resource ID do Projeto de Produção ou substituir 465; testar consulta mínima read-only, filtros empresa, projeção por data e `openApp({NUFIN})`; depois avaliar performance/permissões e somente então migrar. Preservar gadgets 380 e 465, e dashboard 226.
+
+
+## Confirmação visual — Projeto de Produção sem painel lateral do BI (21/10/2026)
+
+O responsável forneceu captura de **Projeto de Produção** aberto em aba própria do Sankhya. A imagem mostra barra de ferramentas e grade nativas; no rodapé aparece a mensagem **"Você está em uma tela personalizada."** Não aparece a barra lateral flutuante **"Esconder ao atualizar"** do visualizador de gadgets de BI.
+
+**Confirmado:** a tela Projeto de Produção é apresentada no invólucro de tela personalizada, sem o painel do BI na captura. Em leitura anterior, os metadados de `TDDINS` identificaram a instância adicional `AD_PROJPROD` com o recurso `br.com.sankhya.menu.adicional.AD_PROJPROD` e descrição "versão 2.0".
+
+**Não confirmado:** que uma tela HTML5 standalone do Add-on Studio terá comportamento idêntico, ou que o `executeQuery` disponibilizado pelo `html5component` do gadget 465 funcionará fora do contexto do BI.
+
+**Plano seguro:** manter gadget 465 (v0.9.2) e gadgets originais intactos. Desenvolver prova de conceito *separada*, com entrada única no menu e tela HTML5 minimalista; testar ausência do painel, autenticação/permissões, uma consulta SQL em modo leitura por API suportada e abertura de NUFIN com `openApp`. Migrar dashboard completo apenas após esse teste. Nunca reutilizar o ID/recurso do Projeto de Produção.
+
+Referências de integração: documentação Sankhya de [Telas Personalizadas (UI)](https://developer.sankhya.com.br/docs/07_telas) e [Menus Personalizados](https://developer.sankhya.com.br/docs/06_menu).
