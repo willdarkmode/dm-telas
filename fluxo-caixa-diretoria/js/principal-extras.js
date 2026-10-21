@@ -72,7 +72,7 @@
     if(window.GGFluxoCaixa && window.GGFluxoCaixa.getCurrentPage()!=="078")return;
     let host=parent.querySelector("#gge-principal");
     if(!host){host=document.createElement("section");host.id="gge-principal";parent.appendChild(host);}
-    host.innerHTML='<div class="gge-section-head"><div class="gg-kicker">DEMAIS INDICADORES DO GADGET 380</div><h2>Posição financeira e comercial</h2>'+
+    host.innerHTML='<div class="gge-section-head"><div class="gg-kicker">INDICADORES COMPLEMENTARES</div><h2>Posição financeira e comercial</h2>'+
       '<p>Indicadores adicionais da Principal com as regras de origem identificadas.</p></div>'+
       '<div class="gge-top-grid">'+bank()+business()+'</div>'+
       '<div class="gge-bottom-grid">'+inventory()+investments()+'</div>';
