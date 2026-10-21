@@ -16,7 +16,7 @@ const context={container:root,companies:[{CODEMP:1,NOMEFANTASIA:"Empresa de test
  fakeWindow.GGFinancePrincipal.render(context);
  assert.equal(customPaints,1,"Projection must render from main container");
  assert.doesNotMatch(root.innerHTML,/FLUXO ACUMULADO · 100 DIAS/);
- assert.match(root.innerHTML,/INDICADORES ORIGINAIS/);
+ assert.match(root.innerHTML,/VISÃO FINANCEIRA/);
  await fakeWindow.GGFinancePrincipal.load();
  assert.equal(executed.length,4,"Only four executive indicator SQLs must run initially");
  assert.equal(executed.some(x=>x.includes("ORIGINAL_100_DIAS")),false);
