@@ -267,3 +267,18 @@ O responsável forneceu captura de **Projeto de Produção** aberto em aba próp
 **Plano seguro:** manter gadget 465 (v0.9.2) e gadgets originais intactos. Desenvolver prova de conceito *separada*, com entrada única no menu e tela HTML5 minimalista; testar ausência do painel, autenticação/permissões, uma consulta SQL em modo leitura por API suportada e abertura de NUFIN com `openApp`. Migrar dashboard completo apenas após esse teste. Nunca reutilizar o ID/recurso do Projeto de Produção.
 
 Referências de integração: documentação Sankhya de [Telas Personalizadas (UI)](https://developer.sankhya.com.br/docs/07_telas) e [Menus Personalizados](https://developer.sankhya.com.br/docs/06_menu).
+
+
+## Roteiro v1.0 — liberação assistida ao financeiro (21/10/2026)
+
+Decisão de escopo: **não tentar ocultar por manipulação de DOM a barra lateral nativa do visualizador de gadgets** (botões “Esconder ao atualizar” / “Atualizar”). Não foi identificada configuração documentada e segura que impeça a reabertura por aproximação do mouse. Essa melhoria é adiada para não comprometer a v0.9.2, já funcional.
+
+**Checklist prioritário antes de ampliar o acesso:**
+
+1. **Segurança e perfis:** validar quem pode acessar cada seção, especialmente **Salários CC**, cuja consulta original de detalhamento não restringe `CODEMP`. Manter essa seção restrita até aprovação de controle efetivo de acesso; ocultar botão no navegador não é proteção de dados.
+2. **Conciliação financeira:** comparar indicadores executivos e regras de TOP/natureza, com empresas e datas iguais; documentar diferenças sem alterar fórmulas silenciosamente.
+3. **Fluxo personalizado:** testar datas livres de 100/365 dias, carregamento por lotes, troca de agrupamento, detalhamento e abertura do título exato por NUFIN em perfil autorizado.
+4. **Estabilidade:** verificar carregamento via Pages e fallback, comportamento de erros, desempenho e reversão rápida ao ZIP v0.9.1/v0.9.2 de referência.
+5. **Piloto:** liberar a um pequeno grupo autorizado do financeiro, coletar feedback e erros antes de apresentar como produção definitiva. Mostrar claramente que a projeção parte de zero e exclui saldo bancário inicial e títulos vencidos anteriores.
+
+**Ambiente:** todas as alterações e testes continuam no gadget 465; não modificar o gadget 380, dashboard 226 ou a tela Projeto de Produção. O roadmap posterior inclui saldo inicial e disponibilidade de caixa, filtros inteligentes, cenários e relatórios.
