@@ -75,7 +75,42 @@ jobs:
           cp fluxo-caixa-diretoria/js/mensal.js public-site/fluxo-caixa-diretoria/js/mensal.js
           cp fluxo-caixa-diretoria/js/projecao.js public-site/fluxo-caixa-diretoria/js/projecao.js
           cp fluxo-caixa-diretoria/index.html public-site/fluxo-caixa-diretoria/index.html
-          printf '%s\n' '<!doctype html><html lang="pt-BR"><meta charset="utf-8"><title>GoldenGear — telas</title><body><h1>GoldenGear — Telas HTML5</h1><p>Recursos publicos para componentes Sankhya.</p></body></html>' > public-site/index.html
+
+          # Cópia opcional do logotipo oficial informado pela P&R.
+          # Falhas do servidor de recursos NÃO podem impedir o deploy do dashboard.
+          mkdir -p public-site/fluxo-caixa-diretoria/assets
+          BRAND_TMP="$(mktemp)"
+          if curl --fail --location --silent --show-error --connect-timeout 8 --max-time 20 --max-filesize 200000 \
+            "https://recursos.perautomacao.com.br/i/catus/logo_R.svg" --output "$BRAND_TMP" &&
+            python3 - "$BRAND_TMP" <<'PY'
+import sys
+import xml.etree.ElementTree as ET
+from pathlib import Path
+path = Path(sys.argv[1])
+content = path.read_bytes()
+assert 30 < len(content) < 200000, "Dimensão de arquivo inválida"
+root = ET.fromstring(content)
+assert root.tag.rsplit("}", 1)[-1] == "svg", "O recurso não é SVG"
+prohibited = {"script", "foreignObject", "iframe", "object", "embed"}
+for node in root.iter():
+    assert node.tag.rsplit("}", 1)[-1] not in prohibited, "SVG inclui elemento ativo"
+    for name, value in node.attrib.items():
+        key = name.rsplit("}", 1)[-1].lower()
+        assert not key.startswith("on"), "SVG inclui evento"
+        assert "javascript:" not in value.lower(), "SVG inclui JS"
+        if key in {"href", "src"}:
+            assert value.startswith("#") or value.startswith("data:image/"), "Referência externa no SVG"
+print("Logotipo corporativo SVG validado")
+PY
+          then
+            cp "$BRAND_TMP" public-site/fluxo-caixa-diretoria/assets/logo-pr.svg
+            echo "Logotipo oficial P&R incorporado ao Pages"
+          else
+            echo "::warning::Logo externo indisponível: interface usará endereço de origem ou fallback P&R"
+          fi
+          rm -f "$BRAND_TMP"
+
+          printf '%s\n' '<!doctype html><html lang="pt-BR"><meta charset="utf-8"><title>P&R Automação Industrial — Fluxo de Caixa</title><body><h1>P&R Automação Industrial</h1><p>Recursos da interface Fluxo de Caixa - Diretoria. Acesso financeiro somente via Sankhya.</p></body></html>' > public-site/index.html
           touch public-site/.nojekyll
           echo 'Arquivos enviados publicamente:'
           find public-site -type f -maxdepth 4 -print
