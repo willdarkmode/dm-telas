@@ -1,4 +1,4 @@
-/* P&R Automação Industrial · Fluxo de Caixa — interface Pages v0.9.2.
+/* P&R Automação Industrial · Fluxo de Caixa — interface Pages v1.0.1.
    Interface pública; as consultas financeiras originais ficam no JSP do Sankhya. */
 (function () {
   "use strict";
@@ -33,7 +33,7 @@
     '<div class="gg-frame"><aside class="gg-side">'+
       '<div class="gg-brand"><span class="gg-brand-logo"><span class="gg-brand-fallback"></span><img id="gg-brand-logo" alt="" aria-hidden="true" /></span><div class="gg-brand-copy"><strong>P&R Automação Industrial</strong><small>Fluxo de Caixa - Diretoria</small></div></div>'+
       '<div class="gg-side-caption">NAVEGAÇÃO</div><nav id="gg-menu" aria-label="Seções do painel"></nav>'+
-      '<div class="gg-side-bottom"><span class="gg-pulse"></span> Sankhya HTML5 · v0.9.2<br><small>Ambiente de validação · 465</small></div>'+
+      '<div class="gg-side-bottom"><span class="gg-pulse"></span> Sankhya HTML5 · v1.0.1<br><small>Ambiente de validação · 465</small></div>'+
     '</aside><main class="gg-main">'+
       '<header class="gg-head"><div><div class="gg-eyebrow">DIRETORIA / SANKHYA</div><h1 id="gg-title">Fluxo de Caixa - Diretoria</h1><p id="gg-subtitle"></p></div>'+
       '<button type="button" class="gg-refresh" id="gg-refresh">↻ Atualizar</button></header>'+
@@ -46,7 +46,7 @@
     const img=document.getElementById("gg-brand-logo");
     if(!img)return;
     const sources=[
-      "https://willdarkmode.github.io/dm-telas/fluxo-caixa-diretoria/assets/logo-pr.svg?v=0.9.2",
+      "https://willdarkmode.github.io/dm-telas/fluxo-caixa-diretoria/assets/logo-pr.svg?v=1.0.1",
       "https://recursos.perautomacao.com.br/i/catus/logo_R.svg"
     ];
     let index=0;
@@ -166,6 +166,6 @@
       financialCount();
     }
   });
-  window.GGFluxoCaixa={version:"0.9.2",openSection:id=>{state.page=id;render();},getCurrentPage:()=>state.page,reload:loadCompanies,runSQL:query,getCompanies:()=>state.companies.slice(),getSelected:()=>state.selected.slice()};
+  window.GGFluxoCaixa={version:"1.0.1",openSection:id=>{state.page=id;render();},getCurrentPage:()=>state.page,reload:loadCompanies,runSQL:query,getCompanies:()=>state.companies.slice(),getSelected:()=>state.selected.slice()};
   loadCompanies();
 })();
