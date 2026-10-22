@@ -140,7 +140,10 @@ function showChartFocus(index){
  let left=scaledX+16;
  if(left+width>area.width-6)left=scaledX-width-16;
  left=Math.max(6,Math.min(left,Math.max(6,area.width-width-6)));
- const top=Math.max(4,Math.min(20,area.height-height-4));
+ const anchorY=graphic.top-area.top+y(row.saldo)/265*graphic.height;
+ let top=anchorY-height-14;
+ if(top<5)top=anchorY+14;
+ top=Math.max(4,Math.min(top,Math.max(4,area.height-height-4)));
  tip.style.left=Math.round(left)+"px";
  tip.style.top=Math.round(top)+"px";
 }
