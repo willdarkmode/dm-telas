@@ -300,3 +300,12 @@ Solicitação do responsável: mostrar os valores do gráfico de projeção ao p
 Os estilos estão em `css/projecao.css`, a versão visível em `js/app.js`, e o teste automatizado em `tests/projecao-tooltip.cjs`. Uma simulação de interação foi executada e confirmou valores exatos das três séries e ausência de SQL adicional. Para quem está no **JSP RC1 de piloto v1.0**, o pacote privado **v1.0.1 RC2 de tooltip** altera **somente a string de cache** `?v=0.9.2-pr1` para `?v=1.0.1-tooltip1`; a SQL salarial corrigida da RC1, as 21 demais SQLs originais, a consulta legada e as duas SQLs de período personalizado continuam byte a byte iguais, assim como o carregador GitHub Pages/jsDelivr.
 
 O pacote é para homologação visual no gadget **465** e não autoriza liberação irrestrita para o financeiro. Permissões de Salários CC e validação financeira permanecem requisitos separados. Nenhum dado ou SQL financeiro foi publicado neste repositório público. Preservar gadget 380 e dashboard 226.
+
+
+## Diagnóstico do tooltip instalado — RC3 (22/10/2026)
+
+O usuário informou que o tooltip não aparecia mesmo depois da importação do novo JSP. Consulta **somente leitura** de `TSIGDG` confirmou no gadget **465** `LENGTH(HTML5) = 9625` bytes, valor igual ao ZIP RC2 local (contra 9622 bytes do RC1): **o RC2 já estava instalado**. O GitHub Actions de publicação `39813488015` também foi concluído com sucesso. O comportamento sugere cache/instância antiga de `projecao.js` ou aba Sankhya não recarregada, mas a causa exata não pode ser demonstrada sem dados do navegador.
+
+Como mitigação foi criado o **ZIP privado RC3**, derivado do JSP RC2 sem alterar nenhuma SQL financeira, filtro ou integração. As únicas mudanças são (1) cache key nova; (2) carregamento de `projecao.js`/`projecao.css` priorizando o commit imutável `a2967109f4957ad47106632161d8cf64b765c285` via jsDelivr, com fallback ao Pages e CDN; (3) checagem de `window.GGProjecao.version === "1.0.1"` para impedir uso silencioso do JS anterior; e (4) estilos essenciais do tooltip inline no JSP para contornar cache de CSS. Testes locais de carregamento normal e queda da fonte principal **passaram**.
+
+**Ação operacional:** fechar a aba do gadget 465 e reabri-la após importar o RC3, para que um iframe antigo não continue ativo. Se nenhuma fonte servir a versão correta, o carregador mostrará mensagem de diagnóstico. Nenhuma modificação foi aplicada via banco; o gadget original 380 e dashboard 226 ficam intocados. O RC3 depende de teste visual no Sankhya.
