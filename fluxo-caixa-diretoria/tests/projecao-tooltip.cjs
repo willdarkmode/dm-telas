@@ -42,9 +42,10 @@ async function main(){
  callbacks.pointermove({target:{closest:x=>x==="svg[data-ggpr-plot]"?svg:null},clientX:172});
  assert.equal(tip.hidden,false);
  assert.match(tip.innerHTML,/22\/10\/2026/);
- assert.match(tip.innerHTML,/100,00/);
- assert.match(tip.innerHTML,/-R\$/);
- assert.match(tip.innerHTML,/60,00/);
+ // Agrupamento padrão semanal: o primeiro ponto acumula sete dias.
+ assert.match(tip.innerHTML,/700,00/);
+ assert.match(tip.innerHTML,/-R\$\s*280,00/);
+ assert.match(tip.innerHTML,/420,00/);
  assert.equal(guide.x1,72);
  callbacks.pointermove({target:{closest:x=>x==="svg[data-ggpr-plot]"?svg:null},clientX:1027});
  assert.match(tip.innerHTML,/29\/10\/2026/);
