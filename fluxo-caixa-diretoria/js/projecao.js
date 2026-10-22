@@ -85,14 +85,95 @@ function curve(){
  }).join("");
  const chart=lines.map(([k,color,title])=>{
   const pts=g.map((r,i)=>x(i)+","+y(r[k])).join(" ");
-  const points=g.length<=60?g.map((r,i)=>'<circle cx="'+x(i)+'" cy="'+y(r[k])+'" r="3" fill="'+color+'"><title>'+
-   esc(label(r)+" • "+title+": "+cash(r[k]))+'</title></circle>').join(""):"";
+  const points=g.length<=60?g.map((r,i)=>'<circle cx="'+x(i)+'" cy="'+y(r[k])+'" r="3" fill="'+color+'"></circle>').join(""):"";
   return '<polyline fill="none" stroke="'+color+'" stroke-width="'+(k==="saldo"?3.3:2.4)+'" stroke-linejoin="round" points="'+pts+'"/>'+points;
  }).join("");
  const idx=[0,Math.floor((g.length-1)/4),Math.floor((g.length-1)/2),Math.floor(3*(g.length-1)/4),g.length-1];
  const labs=[...new Set(idx)].map(i=>'<text x="'+x(i)+'" y="249" font-size="11" text-anchor="middle" fill="#718498">'+esc(fmt(g[i].end).slice(0,5))+'</text>').join("");
+ const focus='<g data-ggpr-focus class="ggpr-focus" visibility="hidden" pointer-events="none">'+
+  '<line data-ggpr-focus-line x1="72" x2="72" y1="20" y2="220" stroke="#6c8996" stroke-width="1.5" stroke-dasharray="5 4"/>'+
+  lines.map(([k,color])=>'<circle data-ggpr-focus-marker="'+k+'" cx="72" cy="220" r="5.4" fill="'+color+'" stroke="#ffffff" stroke-width="2.2"/>').join("")+
+  '</g>';
  return '<div class="ggpr-legend">'+lines.map(([k,c,t])=>'<span><i style="background:'+c+'"></i>'+t+'</span>').join("")+'</div>'+
- '<div class="ggpr-curve"><svg viewBox="0 0 970 265" role="img" aria-label="Projeção acumulada por período personalizado">'+ticks+chart+labs+'</svg></div>';
+ '<div class="ggpr-chart-shell"><div class="ggpr-curve"><svg data-ggpr-plot tabindex="0" viewBox="0 0 970 265" role="img" aria-label="Projeção acumulada: passe o mouse pelo gráfico ou use as setas do teclado para consultar os valores de cada período">'+ticks+chart+labs+focus+'</svg></div>'+
+ '<div data-ggpr-tooltip class="ggpr-tooltip" role="status" aria-live="off" hidden></div></div>';
+}
+// Tooltip usa os mesmos acumulados da série renderizada: não realiza consultas.
+let activeHover=-1;
+function clearChartFocus(){
+ activeHover=-1;
+ if(!p.root)return;
+ const tip=p.root.querySelector("[data-ggpr-tooltip]");
+ const group=p.root.querySelector("[data-ggpr-focus]");
+ if(tip)tip.hidden=true;
+ if(group)group.setAttribute("visibility","hidden");
+}
+function showChartFocus(index){
+ if(!p.root||!samePage()||!p.groups.length)return;
+ const svg=p.root.querySelector("svg[data-ggpr-plot]");
+ const shell=p.root.querySelector(".ggpr-chart-shell");
+ const tip=p.root.querySelector("[data-ggpr-tooltip]");
+ if(!svg||!shell||!tip)return;
+ const i=Math.max(0,Math.min(p.groups.length-1,Math.round(index))),row=p.groups[i];
+ if(!row)return;
+ activeHover=i;
+ const all=p.groups.flatMap(r=>[r.ar,r.ap,r.saldo]);
+ const low=Math.min(0,...all),high=Math.max(0,...all);
+ const x=72+855*i/Math.max(1,p.groups.length-1);
+ const y=v=>22+(high-v)/(high-low||1)*198;
+ const focus=svg.querySelector("[data-ggpr-focus]");
+ const guide=svg.querySelector("[data-ggpr-focus-line]");
+ if(focus)focus.setAttribute("visibility","visible");
+ if(guide){guide.setAttribute("x1",x);guide.setAttribute("x2",x);}
+ for(const key of ["ar","ap","saldo"]){
+  const marker=svg.querySelector('[data-ggpr-focus-marker="'+key+'"]');
+  if(marker){marker.setAttribute("cx",x);marker.setAttribute("cy",y(row[key]));}
+ }
+ tip.innerHTML='<div class="ggpr-tooltip-period">'+esc(label(row))+'</div>'+
+  '<div class="ggpr-tooltip-value"><span><i class="ggpr-dot is-receive"></i>A receber acumulado</span><strong>'+cash(row.ar)+'</strong></div>'+
+  '<div class="ggpr-tooltip-value"><span><i class="ggpr-dot is-pay"></i>A pagar acumulado</span><strong>'+cash(row.ap)+'</strong></div>'+
+  '<div class="ggpr-tooltip-value"><span><i class="ggpr-dot is-balance"></i>Saldo projetado</span><strong>'+cash(row.saldo)+'</strong></div>';
+ tip.hidden=false;
+ const graphic=svg.getBoundingClientRect(),area=shell.getBoundingClientRect();
+ const scaledX=graphic.left-area.left+x/970*graphic.width;
+ const width=tip.offsetWidth||260,height=tip.offsetHeight||125;
+ let left=scaledX+16;
+ if(left+width>area.width-6)left=scaledX-width-16;
+ left=Math.max(6,Math.min(left,Math.max(6,area.width-width-6)));
+ const top=Math.max(4,Math.min(20,area.height-height-4));
+ tip.style.left=Math.round(left)+"px";
+ tip.style.top=Math.round(top)+"px";
+}
+function onPlotMove(event){
+ const svg=event.target.closest&&event.target.closest("svg[data-ggpr-plot]");
+ if(!svg||!p.groups.length||!samePage())return;
+ const bounds=svg.getBoundingClientRect();
+ if(bounds.width<=0)return;
+ const relativeX=(event.clientX-bounds.left)*970/bounds.width;
+ const index=Math.round((relativeX-72)/855*Math.max(1,p.groups.length-1));
+ showChartFocus(index);
+}
+function onPlotOut(event){
+ const svg=event.target.closest&&event.target.closest("svg[data-ggpr-plot]");
+ if(!svg)return;
+ if(event.relatedTarget&&svg.contains(event.relatedTarget))return;
+ clearChartFocus();
+}
+function onPlotFocus(event){
+ if(event.target.matches&&event.target.matches("svg[data-ggpr-plot]"))
+   showChartFocus(activeHover>=0?activeHover:0);
+}
+function onPlotBlur(event){
+ if(event.target.matches&&event.target.matches("svg[data-ggpr-plot]"))clearChartFocus();
+}
+function onPlotKey(event){
+ if(!event.target.matches||!event.target.matches("svg[data-ggpr-plot]"))return;
+ if(!["ArrowLeft","ArrowRight","Home","End","Escape"].includes(event.key))return;
+ event.preventDefault();
+ if(event.key==="Escape"){clearChartFocus();return;}
+ if(event.key==="Home"){showChartFocus(0);return;}
+ if(event.key==="End"){showChartFocus(p.groups.length-1);return;}
+ showChartFocus((activeHover<0?0:activeHover)+(event.key==="ArrowRight"?1:-1));
 }
 function cards(){
  const last=p.data[p.data.length-1];if(!last)return "";
@@ -325,12 +406,27 @@ function onChange(ev){
  }
 }
 window.GGProjecao={
- version:"0.9.1",
+ version:"1.0.1",
  render(context){
   p.ctx=context;
   if(p.root!==context.container){
-   if(p.root){p.root.removeEventListener("click",onClick);p.root.removeEventListener("change",onChange);}
-   p.root=context.container;p.root.addEventListener("click",onClick);p.root.addEventListener("change",onChange);
+   if(p.root){
+    p.root.removeEventListener("click",onClick);
+    p.root.removeEventListener("change",onChange);
+    p.root.removeEventListener("pointermove",onPlotMove);
+    p.root.removeEventListener("pointerout",onPlotOut);
+    p.root.removeEventListener("focusin",onPlotFocus);
+    p.root.removeEventListener("focusout",onPlotBlur);
+    p.root.removeEventListener("keydown",onPlotKey);
+   }
+   p.root=context.container;
+   p.root.addEventListener("click",onClick);
+   p.root.addEventListener("change",onChange);
+   p.root.addEventListener("pointermove",onPlotMove);
+   p.root.addEventListener("pointerout",onPlotOut);
+   p.root.addEventListener("focusin",onPlotFocus);
+   p.root.addEventListener("focusout",onPlotBlur);
+   p.root.addEventListener("keydown",onPlotKey);
   }
   invalidateIfCompaniesChanged();paint();
  }
