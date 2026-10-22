@@ -33,3 +33,23 @@
 .ggpr-original .ggpr-legacy{min-width:1650px}
 @media(max-width:1350px){.ggpr-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:680px){.ggpr-kpis{grid-template-columns:1fr}.ggpr-subhead{flex-direction:column}.ggpr-dates>*{flex:1 1 44%}.ggpr-legend{justify-content:flex-start}}
+/* Tooltip financeiro de projeção · v1.0.1
+   Ativado apenas por interação, sem chamadas extras de SQL. */
+.ggpr-chart-shell{position:relative;min-width:0}
+.ggpr-curve svg[data-ggpr-plot]{cursor:crosshair;outline-offset:3px}
+.ggpr-curve svg[data-ggpr-plot]:focus-visible{outline:2px solid #178f85;border-radius:7px}
+.ggpr-focus{pointer-events:none}
+.ggpr-tooltip{position:absolute;z-index:8;box-sizing:border-box;max-width:calc(100% - 12px);
+ min-width:250px;padding:12px 14px;border:1px solid #d6e5e8;border-radius:10px;
+ background:#ffffff;box-shadow:0 9px 26px rgba(18,47,65,.18);
+ pointer-events:none;color:#233b4c;font-size:12px;font-variant-numeric:tabular-nums}
+.ggpr-tooltip[hidden]{display:none!important}
+.ggpr-tooltip-period{font-size:12px;font-weight:800;color:#173f4d;border-bottom:1px solid #e7eef1;padding-bottom:9px;margin-bottom:9px;white-space:nowrap}
+.ggpr-tooltip-value{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:5px 0;white-space:nowrap}
+.ggpr-tooltip-value span{display:inline-flex;align-items:center;gap:7px;color:#546c7e}
+.ggpr-tooltip-value strong{font-weight:800;color:#173246}
+.ggpr-dot{display:inline-block;flex:0 0 auto;width:9px;height:9px;border-radius:100%}
+.ggpr-dot.is-receive{background:#0e9b83}
+.ggpr-dot.is-pay{background:#dc7081}
+.ggpr-dot.is-balance{background:#2b6b9a}
+@media(max-width:650px){.ggpr-tooltip{min-width:0;width:240px;font-size:11px;padding:9px 11px}.ggpr-tooltip-period{font-size:11px}}
