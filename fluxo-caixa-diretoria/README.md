@@ -309,3 +309,12 @@ O usuário informou que o tooltip não aparecia mesmo depois da importação do 
 Como mitigação foi criado o **ZIP privado RC3**, derivado do JSP RC2 sem alterar nenhuma SQL financeira, filtro ou integração. As únicas mudanças são (1) cache key nova; (2) carregamento de `projecao.js`/`projecao.css` priorizando o commit imutável `a2967109f4957ad47106632161d8cf64b765c285` via jsDelivr, com fallback ao Pages e CDN; (3) checagem de `window.GGProjecao.version === "1.0.1"` para impedir uso silencioso do JS anterior; e (4) estilos essenciais do tooltip inline no JSP para contornar cache de CSS. Testes locais de carregamento normal e queda da fonte principal **passaram**.
 
 **Ação operacional:** fechar a aba do gadget 465 e reabri-la após importar o RC3, para que um iframe antigo não continue ativo. Se nenhuma fonte servir a versão correta, o carregador mostrará mensagem de diagnóstico. Nenhuma modificação foi aplicada via banco; o gadget original 380 e dashboard 226 ficam intocados. O RC3 depende de teste visual no Sankhya.
+
+
+## Confirmação visual do tooltip — RC3 (22/10/2026)
+
+O responsável confirmou, por captura do gadget de homologação **465**, que o **tooltip de projeção v1.0.1 RC3** funciona no ambiente Sankhya. A imagem demonstra a linha-guia vertical, três pontos destacados, janela flutuante com o intervalo semanal selecionado e os valores exatos acumulados de A receber, A pagar e Saldo projetado. A atualização RC3 superou o problema de cache/carregamento observado com RC2.
+
+**Estado:** homologação visual da interação de hover confirmada para agrupamento semanal. Os cenários 365 dias, agrupamento diário/mensal, desempenho em produção e permissões por perfil continuam com verificações específicas; não atribuir homologação financeira integral à confirmação visual do tooltip.
+
+**Baseline recomendada para testes seguintes:** v1.0.1 RC3 no gadget 465. Manter rollback para a v0.9.2/RC1, preservar o gadget 380 e o dashboard 226. Não publicar valores financeiros, nomes de terceiros ou NUFINs das capturas.
