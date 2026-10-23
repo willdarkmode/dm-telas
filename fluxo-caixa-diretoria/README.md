@@ -318,3 +318,17 @@ O responsável confirmou, por captura do gadget de homologação **465**, que o 
 **Estado:** homologação visual da interação de hover confirmada para agrupamento semanal. Os cenários 365 dias, agrupamento diário/mensal, desempenho em produção e permissões por perfil continuam com verificações específicas; não atribuir homologação financeira integral à confirmação visual do tooltip.
 
 **Baseline recomendada para testes seguintes:** v1.0.1 RC3 no gadget 465. Manter rollback para a v0.9.2/RC1, preservar o gadget 380 e o dashboard 226. Não publicar valores financeiros, nomes de terceiros ou NUFINs das capturas.
+
+## RC4 v1.0.2 — exercício anual compartilhado (23/10/2026)
+
+Atendendo solicitação do responsável, as quatro abas **Centros de Custo (056)**, **Salários CC (0E8)**, **Receitas por mês (20P)** e **Despesas por mês (41W)** deixam de apresentar exclusivamente o ano de 2025. O filtro **Exercício**, compartilhado entre elas, inicia no ano corrente do navegador (**2026 nesta data**) e permite selecionar exercícios desde 2021 até o ano seguinte. Ao trocar de aba, a escolha é preservada na sessão. A consulta é reexecutada com empresas selecionadas e exercício do usuário.
+
+**Implementação:** o módulo público `js/exercicio.js` aplica substituições estritamente delimitadas a nove consultas anuais previamente autorizadas: datas `dd/mm/2025`, aliases de colunas mensais `JAN_2025` etc. e rótulos de séries `jan/25` etc. Não substitui os números isolados 2025, 2026 ou constantes de **TOP, natureza, empresa**. Selecionar 2025 retorna SQL original byte a byte. As páginas atualizam título, período e colunas da opção **Ver 12 meses**. Módulos alterados: `js/app.js`, `js/centros.js`, `js/mensal.js`; CSS correspondente das duas últimas abas.
+
+**Não incluídas:** indicadores anuais fixos de 2025 da **Principal** e períodos específicos da posição comercial original, que exigem decisão financeira separada; a projeção por datas livres já permanece independente do exercício.
+
+**SQL privada:** o JSP RC4 entregue ao responsável é derivado da RC3, com adição de `exercicio.js` e novo identificador de cache. Comparação literal confirmou invariância das **22 SQLs originais** (incluindo filtro CODEMP do detalhe salarial), **duas de projeção dinâmica** e da referência legada `grd_1BP`. Nenhuma SQL ou valor financeiro é publicado no repositório.
+
+**Verificações:** `js/exercicio.js` usa allowlist de nove consultas; os testes `tests/exercicio.cjs` cobrem aliases, 2025 original, 2026, TOPs intactos, rótulos/grids e alternância. Simulação adicional do módulo Centros comprovou renderizações em 2026 e 2025 e duas consultas com filtro correto. A consulta mensal agregada para 2026 foi executada no Oracle do Sankhya **somente leitura**, retornando 12 meses. [GitHub Actions aprovado](https://github.com/willdarkmode/dm-telas/actions/runs/39972044669).
+
+**Publicação:** RC4 exclusivo ao gadget de testes 465. Preservar o ZIP RC3 como rollback e não alterar gadget 380, dashboard 226. Permanecem obrigatórios: avaliação de permissões para Salários CC e conciliação de indicadores financeiros com responsáveis antes da liberação ampla.
