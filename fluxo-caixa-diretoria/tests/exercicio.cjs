@@ -43,7 +43,7 @@ const sleep=()=>new Promise(resolve=>setTimeout(resolve,30));
  assert.match(host.innerHTML,/EXERCÍCIO 2026/);
  assert.match(host.innerHTML,/Janeiro DE 2026/);
  assert.match(host.innerHTML,/Total de 2026/);
- assert.match(host.innerHTML,/R\$ 700,00/);
+ assert.match(host.innerHTML,/R\$\s*700,00/);
  assert.match(requested[0],/jan\/26/);
  assert.match(requested[1],/JAN_2026/);
  // Uma consulta em andamento de outro ano não pode sobrescrever os resultados.
