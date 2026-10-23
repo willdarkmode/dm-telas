@@ -17,9 +17,11 @@ on:
       - "fluxo-caixa-diretoria/tests/pendentes-nufin.cjs"
       - "fluxo-caixa-diretoria/tests/projecao-periodo.cjs"
       - "fluxo-caixa-diretoria/tests/projecao-tooltip.cjs"
+      - "fluxo-caixa-diretoria/tests/exercicio.cjs"
       - "fluxo-caixa-diretoria/tests/principal-projecao-unica.cjs"
       - "fluxo-caixa-diretoria/js/centros.js"
       - "fluxo-caixa-diretoria/js/mensal.js"
+      - "fluxo-caixa-diretoria/js/exercicio.js"
       - "fluxo-caixa-diretoria/js/projecao.js"
       - "fluxo-caixa-diretoria/index.html"
       - ".github/workflows/pages.yml"
@@ -53,6 +55,8 @@ jobs:
           node fluxo-caixa-diretoria/tests/pendentes-nufin.cjs
           node --check fluxo-caixa-diretoria/js/centros.js
           node --check fluxo-caixa-diretoria/js/mensal.js
+          node --check fluxo-caixa-diretoria/js/exercicio.js
+          node fluxo-caixa-diretoria/tests/exercicio.cjs
           node --check fluxo-caixa-diretoria/js/projecao.js
           node fluxo-caixa-diretoria/tests/projecao-periodo.cjs
           node fluxo-caixa-diretoria/tests/projecao-tooltip.cjs
@@ -75,6 +79,7 @@ jobs:
           cp fluxo-caixa-diretoria/js/pendentes.js public-site/fluxo-caixa-diretoria/js/pendentes.js
           cp fluxo-caixa-diretoria/js/centros.js public-site/fluxo-caixa-diretoria/js/centros.js
           cp fluxo-caixa-diretoria/js/mensal.js public-site/fluxo-caixa-diretoria/js/mensal.js
+          cp fluxo-caixa-diretoria/js/exercicio.js public-site/fluxo-caixa-diretoria/js/exercicio.js
           cp fluxo-caixa-diretoria/js/projecao.js public-site/fluxo-caixa-diretoria/js/projecao.js
           cp fluxo-caixa-diretoria/index.html public-site/fluxo-caixa-diretoria/index.html
 
