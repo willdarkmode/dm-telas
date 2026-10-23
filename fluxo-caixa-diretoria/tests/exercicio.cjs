@@ -53,7 +53,7 @@ const sleep=()=>new Promise(resolve=>setTimeout(resolve,30));
  assert.match(host.innerHTML,/Total de 2025/);
  assert.match(requested[2],/jan\/25/);
  assert.match(requested[3],/JAN_2025/);
- host.handlers.change({target:{value:"2026",closest:s=>s==="[data-ggm-exercise]"?{}:null}});
+ host.handlers.change({target:{value:"2026",closest:s=>s==="[data-ggm-exercise]"?{value:"2026"}:null}});
  assert.equal(selectedYear,2026,"seletor encaminha ano ao estado global");
  console.log("PASS: nove SQLs parametrizadas, TOP preservado, 2025 idêntico, gráfico e grade mensal 2026⇄2025");
 })().catch(err=>{console.error(err);process.exitCode=1});
