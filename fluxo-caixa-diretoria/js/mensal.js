@@ -27,13 +27,13 @@ function companies(page){
 function query(page,id){
  const raw=window.GGFluxoOriginalSQL&&window.GGFluxoOriginalSQL[id];
  if(typeof raw!=="string"||!raw.trim())throw Error("SQL "+id+" ausente. Importe o JSP v0.7.0.");
- return raw.replace(/:CODEMP\b/g,companies(page)).replace(/;\s*$/,"").trim();
+ return window.GGExercicio.prepare(raw,id,ctx[page].year).replace(/:CODEMP\b/g,companies(page)).replace(/;\s*$/,"").trim();
 }
-function chartMonths(rows){
+function chartMonths(rows,year){
  const out=new Array(12).fill(null).map((_,i)=>({month:MONTHS[i][0],RECEITA:0,DESPESA:0,exists:false}));
  for(const row of rows||[]){
   const label=String(row.MES||"").trim().toLowerCase();
-  const ix=MONTHS.findIndex(x=>x[2]===label);
+  const ix=MONTHS.findIndex(x=>x[2].slice(0,3)+"/"+String(year).slice(-2)===label);
   if(ix>=0){out[ix]={month:MONTHS[ix][0],RECEITA:number(row,"RECEITA"),DESPESA:number(row,"DESPESA"),exists:true};}
  }
  return out;
@@ -42,13 +42,13 @@ function selectedRows(page){
  const st=state(page),search=st.needle.toLocaleLowerCase("pt-BR");
  const rows=st.grid.filter(r=>!search||String(r.DESCRNAT||"").toLocaleLowerCase("pt-BR").includes(search)||
   String(r.DESCRCENCUS||"").toLocaleLowerCase("pt-BR").includes(search)||String(r.NATUREZA||"").includes(search));
- const col=MONTHS[st.month][0]+"_2025";
+ const col=MONTHS[st.month][0]+"_"+ctx[page].year;
  rows.sort((a,b)=>st.sort==="az"?String(a.DESCRNAT||"").localeCompare(String(b.DESCRNAT||""),"pt-BR"):
   number(b,col)-number(a,col)||String(a.DESCRNAT||"").localeCompare(String(b.DESCRNAT||""),"pt-BR"));
  return rows;
 }
 function monthBar(page){
- const st=state(page),c=CONFIG[page],vals=chartMonths(st.chart);
+ const st=state(page),c=CONFIG[page],vals=chartMonths(st.chart,ctx[page].year);
  if(!st.chart.length)return '<p class="ggm-hint">A consulta do gráfico não retornou meses neste período.</p>';
  const numbers=vals.flatMap(r=>[r.RECEITA,r.DESPESA]);
  const low=Math.min(0,...numbers),high=Math.max(0,...numbers);
@@ -72,16 +72,16 @@ function monthBar(page){
    esc((value/1000000).toLocaleString("pt-BR",{maximumFractionDigits:1}))+' mi</text>';
  }).join("");
  return '<div class="ggm-legend"><span><i style="background:'+c.accent+'"></i>'+esc(p1label(page))+'</span><span><i style="background:'+c.secondary+'"></i>'+esc(p2label(page))+'</span></div>'+
- '<div class="ggm-chart"><svg viewBox="0 0 1030 265" role="img" aria-label="Receitas e despesas baixadas por mês no ano de 2025">'+
+ '<div class="ggm-chart"><svg viewBox="0 0 1030 265" role="img" aria-label="Receitas e despesas baixadas por mês no exercício '+ctx[page].year+'" >'+
  lines+bars+'</svg></div>';
 }
 const p1label=p=>p==="20P"?"Receitas (destaque)":"Despesas (destaque)";
 const p2label=p=>p==="20P"?"Despesas (comparativo)":"Receitas (comparativo)";
 function monthSummary(page){
- const st=state(page),r=chartMonths(st.chart)[st.month],primary=CONFIG[page].primary,secondary=primary==="RECEITA"?"DESPESA":"RECEITA";
+ const st=state(page),r=chartMonths(st.chart,ctx[page].year)[st.month],primary=CONFIG[page].primary,secondary=primary==="RECEITA"?"DESPESA":"RECEITA";
  const active=MONTHS[st.month],available=st.chart.length>0;
  return '<div class="ggm-month-cards">'+
- '<section class="gg-panel ggm-metric"><div class="gg-kicker">'+esc(active[1])+' DE 2025</div><h3>'+p1label(page).replace(" (destaque)","")+'</h3><strong>'+
+ '<section class="gg-panel ggm-metric"><div class="gg-kicker">'+esc(active[1])+' DE '+ctx[page].year+'</div><h3>'+p1label(page).replace(" (destaque)","")+'</h3><strong>'+
  (st.loading&&!available?"Consultando…":available?money(r[primary]):"—")+'</strong></section>'+
  '<section class="gg-panel ggm-metric muted"><div class="gg-kicker">COMPARATIVO · '+esc(active[1].toUpperCase())+'</div><h3>'+p2label(page).replace(" (comparativo)","")+'</h3><strong>'+
  (st.loading&&!available?"Consultando…":available?money(r[secondary]):"—")+'</strong></section></div>';
@@ -90,18 +90,18 @@ function displayGrid(page){
  const cfg=CONFIG[page],st=state(page),all=selectedRows(page);
  const maxPages=Math.max(1,Math.ceil(all.length/50));st.page=Math.min(st.page,maxPages);
  const visible=all.slice((st.page-1)*50,st.page*50);
- const key=MONTHS[st.month][0]+"_2025";
- const columns=[...MONTHS.map(x=>x[0]+"_2025")];
+ const key=MONTHS[st.month][0]+"_"+ctx[page].year;
+ const columns=[...MONTHS.map(x=>x[0]+"_"+ctx[page].year)];
  const heading=cfg.primary==="RECEITA"?"Natureza":"Natureza / centro de custo";
  const th='<th>'+heading+'</th>'+
   (st.showYear?MONTHS.map((m,i)=>'<th'+(i===st.month?' class="ggm-selected-col"':'')+'>'+m[0]+'</th>').join(""):'<th class="ggm-selected-col">'+MONTHS[st.month][0]+'</th>')+
-  '<th>Total de 2025</th>';
+  '<th>Total de '+ctx[page].year+'</th>';
  const rows=visible.map(r=>{
   const total=cfg.primary==="DESPESA"?number(r,"TOTAL"):columns.reduce((a,k)=>a+number(r,k),0);
   const title=cfg.primary==="DESPESA"?
    '<strong>'+esc(r.DESCRNAT)+'</strong><span>'+esc(r.DESCRCENCUS||"Sem centro")+'</span>':
    '<strong>'+esc(r.DESCRNAT)+'</strong>';
-  const months=st.showYear?MONTHS.map((m,i)=>'<td'+(i===st.month?' class="ggm-selected-col"':'')+'>'+money(number(r,m[0]+"_2025"))+'</td>').join(""):'<td class="ggm-selected-col">'+money(number(r,key))+'</td>';
+  const months=st.showYear?MONTHS.map((m,i)=>'<td'+(i===st.month?' class="ggm-selected-col"':'')+'>'+money(number(r,m[0]+"_"+ctx[page].year))+'</td>').join(""):'<td class="ggm-selected-col">'+money(number(r,key))+'</td>';
   return '<tr><td class="ggm-name">'+title+'</td>'+months+'<td>'+money(total)+'</td></tr>';
  }).join("");
  const grand=all.reduce((t,r)=>t+number(r,key),0);
@@ -121,11 +121,11 @@ function paint(page){
  ).join("");
  const nav=MONTHS.map((m,i)=>'<button data-ggm-month="'+i+'" type="button" class="'+(st.month===i?"active":"")+'">'+m[0]+'</button>').join("");
  c.container.innerHTML=
- '<header class="gg-panel ggm-header"><div><div class="gg-kicker">FLUXO DE CAIXA · EXERCÍCIO ORIGINAL 2025</div>'+
- '<h2>'+esc(conf.title)+'</h2><p>Baixas registradas de janeiro a dezembro de 2025, conforme as regras financeiras do Sankhya.</p></div>'+
+ '<header class="gg-panel ggm-header"><div><div class="gg-kicker">FLUXO DE CAIXA · EXERCÍCIO '+c.year+'</div>'+
+ '<h2>'+esc(conf.title)+'</h2><p>Baixas registradas de janeiro a dezembro de '+c.year+', conforme as regras financeiras do Sankhya.</p></div>'+
  '<button type="button" data-ggm-refresh class="gg-button"'+(st.loading?' disabled':'')+'>Atualizar</button></header>'+
  '<section class="gg-panel ggm-filters"><div><div class="gg-kicker">EMPRESAS</div><div class="ggm-company-list">'+companyHTML+
- '</div></div><button type="button" data-ggm-apply class="gg-button"'+(st.loading?' disabled':'')+'>Aplicar filtro</button></section>'+
+ '</div></div><div class="gg-year-field"><label for="ggm-year-'+page+'">Exercício</label><select id="ggm-year-'+page+'" data-ggm-exercise aria-label="Selecionar exercício financeiro">'+window.GGExercicio.options(c.year)+'</select></div><button type="button" data-ggm-apply class="gg-button"'+(st.loading?' disabled':'')+'>Aplicar filtro</button></section>'+
  '<div class="ggm-monthbar">'+nav+'</div>'+
  monthSummary(page)+
  '<section class="gg-panel ggm-graphic"><div class="ggm-section-title"><h3>Receitas × despesas por mês</h3>'+
@@ -142,7 +142,7 @@ function paint(page){
 async function load(page,force){
  const c=ctx[page],st=state(page);if(!c||!c.companies.length||st.loading)return;
  let key;
- try{key=companies(page);}catch(e){st.errorGrid=String(e.message||e);paint(page);return;}
+ try{key=companies(page)+"|"+c.year;}catch(e){st.errorGrid=String(e.message||e);paint(page);return;}
  if(!force&&st.key===key){paint(page);return;}
  const token=++st.token;st.key=key;st.chart=[];st.grid=[];st.errorChart="";st.errorGrid="";st.loading=true;st.page=1;paint(page);
  for(const [type,id] of [["chart",CONFIG[page].chart],["grid",CONFIG[page].grid]]){
@@ -174,12 +174,22 @@ function click(page,event){
  if(btn.hasAttribute("data-ggm-next")){st.page++;paint(page);}
 }
 window.GGMensal={
- version:"0.7.0",
+ version:"1.0.2",
  render(page,options){
   if(!CONFIG[page])return;
+  const st=state(page);
+  if(ctx[page]&&ctx[page].year!==options.year){
+   st.token++;st.loading=false;st.key=null;st.chart=[];st.grid=[];st.page=1;st.errorChart="";st.errorGrid="";
+  }
   ctx[page]=Object.assign({},options);
   const host=options.container;
   if(!host.dataset.ggmListener){
+   host.addEventListener("change",ev=>{
+    const el=ev.target.closest("[data-ggm-exercise]");
+    if(!el)return;
+    const curr=window.GGFluxoCaixa&&window.GGFluxoCaixa.getCurrentPage();
+    if(CONFIG[curr]&&ctx[curr])ctx[curr].setYear(Number(el.value));
+   });
    host.addEventListener("click",ev=>{
     const curr=window.GGFluxoCaixa&&window.GGFluxoCaixa.getCurrentPage();
     if(CONFIG[curr])click(curr,ev);
