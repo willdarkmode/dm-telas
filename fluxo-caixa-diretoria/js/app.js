@@ -1,19 +1,19 @@
-/* P&R Automação Industrial · Fluxo de Caixa — interface Pages v1.0.1.
+/* P&R Automação Industrial · Fluxo de Caixa — interface Pages v1.0.2.
    Interface pública; as consultas financeiras originais ficam no JSP do Sankhya. */
 (function () {
   "use strict";
   const pages = [
     {id:"078", title:"Principal", subtitle:"Indicadores executivos e uma única projeção por período livre"},
-    {id:"056", title:"Centros de Custo", subtitle:"Ranking e detalhamento de despesas por centro • 2025"},
-    {id:"20P", title:"Receitas por mês", subtitle:"Baixas de receitas e despesas • janeiro a dezembro de 2025"},
-    {id:"41W", title:"Despesas por mês", subtitle:"Baixas por natureza e centro de custo • 2025"},
-    {id:"0E8", title:"Salários CC", subtitle:"Despesas salariais por centro e parceiro • 2025"},
+    {id:"056", title:"Centros de Custo", subtitle:"Ranking e detalhamento de despesas por centro • exercício selecionável"},
+    {id:"20P", title:"Receitas por mês", subtitle:"Baixas de receitas e despesas • exercício selecionável"},
+    {id:"41W", title:"Despesas por mês", subtitle:"Baixas por natureza e centro de custo • exercício selecionável"},
+    {id:"0E8", title:"Salários CC", subtitle:"Despesas salariais por centro e parceiro • exercício selecionável"},
     {id:"20O", title:"Receitas Pendentes", subtitle:"Títulos a receber por período"},
     {id:"06B", title:"Despesas Pendentes", subtitle:"Títulos a pagar por período"}
   ];
   const root = document.getElementById("gg-fc-app");
   if (!root) return;
-  const state = { page:"078", companies:[], selected:[], busy:false, connection:"Aguardando", counter:null };
+  const state = { page:"078", year:window.GGExercicio?window.GGExercicio.currentYear():new Date().getFullYear(), companies:[], selected:[], busy:false, connection:"Aguardando", counter:null };
   const escapeHtml = s => String(s == null ? "" : s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const query = sql => new Promise((resolve,reject) => {
     if (typeof executeQuery !== "function") { reject(new Error("executeQuery() indisponível no JSP. Verifique snk:load().")); return; }
@@ -33,7 +33,7 @@
     '<div class="gg-frame"><aside class="gg-side">'+
       '<div class="gg-brand"><span class="gg-brand-logo"><span class="gg-brand-fallback"></span><img id="gg-brand-logo" alt="" aria-hidden="true" /></span><div class="gg-brand-copy"><strong>P&R Automação Industrial</strong><small>Fluxo de Caixa - Diretoria</small></div></div>'+
       '<div class="gg-side-caption">NAVEGAÇÃO</div><nav id="gg-menu" aria-label="Seções do painel"></nav>'+
-      '<div class="gg-side-bottom"><span class="gg-pulse"></span> Sankhya HTML5 · v1.0.1<br><small>Ambiente de validação · 465</small></div>'+
+      '<div class="gg-side-bottom"><span class="gg-pulse"></span> Sankhya HTML5 · v1.0.2<br><small>Ambiente de validação · 465</small></div>'+
     '</aside><main class="gg-main">'+
       '<header class="gg-head"><div><div class="gg-eyebrow">DIRETORIA / SANKHYA</div><h1 id="gg-title">Fluxo de Caixa - Diretoria</h1><p id="gg-subtitle"></p></div>'+
       '<button type="button" class="gg-refresh" id="gg-refresh">↻ Atualizar</button></header>'+
@@ -63,6 +63,12 @@
   function menu() {
     byId("gg-menu").innerHTML = pages.map(p=>'<button type="button" data-page="'+p.id+'" class="gg-nav-item'+(state.page===p.id?" active":"")+'">'+escapeHtml(p.title)+'</button>').join("");
   }
+  function changeYear(next){
+    const year=window.GGExercicio.parse(next);
+    if(state.year===year)return;
+    state.year=year;
+    render();
+  }
   function render() {
     menu();
     const page = pages.find(x=>x.id===state.page) || pages[0];
@@ -70,22 +76,22 @@
     byId("gg-subtitle").textContent=page.subtitle;
     if (page.id!=="078") {
       if ((page.id==="20P" || page.id==="41W") && window.GGMensal) {
-        window.GGMensal.render(page.id,{container:byId("gg-body"),companies:state.companies,selected:state.selected,execute:query,setSelected:ids=>{state.selected=ids;}});
+        window.GGMensal.render(page.id,{container:byId("gg-body"),companies:state.companies,selected:state.selected,year:state.year,setYear:changeYear,execute:query,setSelected:ids=>{state.selected=ids;}});
         return;
       }
       if ((page.id==="056" || page.id==="0E8") && window.GGCentros) {
-        window.GGCentros.render(page.id,{container:byId("gg-body"),companies:state.companies,selected:state.selected,execute:query,setSelected:ids=>{state.selected=ids;}});
+        window.GGCentros.render(page.id,{container:byId("gg-body"),companies:state.companies,selected:state.selected,year:state.year,setYear:changeYear,execute:query,setSelected:ids=>{state.selected=ids;}});
         return;
       }
       if ((page.id==="20O" || page.id==="06B") && window.GGPendentes) {
-        window.GGPendentes.render(page.id,{container:byId("gg-body"),companies:state.companies,selected:state.selected,execute:query,setSelected:ids=>{state.selected=ids;}});
+        window.GGPendentes.render(page.id,{container:byId("gg-body"),companies:state.companies,selected:state.selected,year:state.year,setYear:changeYear,execute:query,setSelected:ids=>{state.selected=ids;}});
         return;
       }
       byId("gg-body").innerHTML='<section class="gg-panel"><div class="gg-kicker">SEÇÃO ORIGINAL · '+escapeHtml(page.id)+'</div><h2>'+escapeHtml(page.title)+'</h2><p>Esta seção está preparada na navegação HTML5. As consultas e o detalhamento financeiro serão migrados na etapa de homologação com o gadget 380.</p></section>';
       return;
     }
     if (window.GGFinancePrincipal && typeof window.GGFinancePrincipal.render === "function") {
-      window.GGFinancePrincipal.render({container:byId("gg-body"),companies:state.companies,selected:state.selected,execute:query,setSelected:ids=>{state.selected=ids;}});
+      window.GGFinancePrincipal.render({container:byId("gg-body"),companies:state.companies,selected:state.selected,year:state.year,setYear:changeYear,execute:query,setSelected:ids=>{state.selected=ids;}});
       return;
     }
     byId("gg-body").innerHTML =
@@ -166,6 +172,6 @@
       financialCount();
     }
   });
-  window.GGFluxoCaixa={version:"1.0.1",openSection:id=>{state.page=id;render();},getCurrentPage:()=>state.page,reload:loadCompanies,runSQL:query,getCompanies:()=>state.companies.slice(),getSelected:()=>state.selected.slice()};
+  window.GGFluxoCaixa={version:"1.0.2",openSection:id=>{state.page=id;render();},getCurrentPage:()=>state.page,reload:loadCompanies,runSQL:query,getCompanies:()=>state.companies.slice(),getSelected:()=>state.selected.slice()};
   loadCompanies();
 })();
