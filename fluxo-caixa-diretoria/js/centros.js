@@ -23,7 +23,7 @@ function selectedCompanies(ctx){
 function prepared(page,id,cc){
  const sql=window.GGFluxoOriginalSQL&&window.GGFluxoOriginalSQL[id];
  if(typeof sql!=="string"||!sql.trim())throw Error("Consulta "+id+" não encontrada no JSP v0.6.0.");
- let q=sql.replace(/:CODEMP\b/g,selectedCompanies(contexts[page]));
+ let q=window.GGExercicio.prepare(sql,id,contexts[page].year).replace(/:CODEMP\b/g,selectedCompanies(contexts[page]));
  if(/:DESCRCENCUS\b/.test(q)){
   if(typeof cc!=="string"||!cc)throw Error("Selecione um centro de custo válido.");
   if(!state(page).list.some(r=>String(r.DESCRCENCUS)===cc))throw Error("O centro escolhido não pertence ao ranking carregado.");
@@ -38,13 +38,14 @@ function filters(page){
  const ctx=contexts[page];
  return '<section class="gg-panel gcc-filter"><div><div class="gg-kicker">EMPRESAS PARA O RANKING</div>'+
  '<div class="gcc-company-list">'+ctx.companies.map(c=>'<label class="gg-check"><input data-gcc-company type="checkbox" value="'+Number(c.CODEMP)+'"'+(ctx.selected.includes(Number(c.CODEMP))?' checked':'')+'><span>'+esc(c.NOMEFANTASIA)+' <small>('+Number(c.CODEMP)+')</small></span></label>').join("")+'</div></div>'+
+ '<div class="gg-year-field"><label for="gcc-year-'+page+'">Exercício</label><select id="gcc-year-'+page+'" data-gcc-year aria-label="Selecionar exercício financeiro">'+window.GGExercicio.options(ctx.year)+'</select></div>'+
  '<button type="button" class="gg-button" data-gcc-apply>Aplicar filtro</button></section>';
 }
 function ranking(page){
  const st=state(page),rows=st.list,top=Math.max(1,...rows.map(r=>num(r,"RECEBIDO")));
  const total=rows.reduce((sum,r)=>sum+num(r,"RECEBIDO"),0);
  return '<section class="gg-panel gcc-ranking"><div class="gcc-panel-heading"><div><h3>Despesas por centro de custo</h3>'+
- '<p>Baixas do exercício de 2025; escolha um centro para abrir o detalhamento.</p></div>'+
+ '<p>Baixas do exercício de '+contexts[page].year+'; escolha um centro para abrir o detalhamento.</p></div>'+
  '<strong class="gcc-total">'+money(total)+'</strong></div>'+
  (st.error?'<p class="gcc-error">'+esc(st.error)+'</p>':st.loading?'<p class="gcc-muted">Consultando centros de custo…</p>':
  rows.length?'<div class="gcc-ranking-list">'+rows.map((r,i)=>'<button type="button" class="gcc-rank'+(i===st.selected?' is-active':'')+'" data-gcc-index="'+i+'">'+
@@ -87,9 +88,9 @@ function details(page){
  const title=row&&row.DESCRCENCUS;
  return '<section class="gg-panel gcc-detail"><h3>'+esc(title||"Detalhamento por centro")+'</h3>'+
  (!title?'<p class="gcc-empty">Selecione um centro no ranking para ver sua composição.</p>':
- '<p class="gcc-muted">'+(page==="056"?'Composição de despesas por natureza e parceiro • exercício 2025.':
- 'Composição de pagamentos por parceiro e por mês • exercício 2025.')+'</p>'+
- (page==="0E8"?'<div class="gcc-alert">A consulta original do detalhamento salarial <strong>não filtra CODEMP</strong>. Os valores abaixo podem abranger empresas além das selecionadas. Informação sensível: acesso deve respeitar as permissões do Sankhya.</div>':'')+
+ '<p class="gcc-muted">'+(page==="056"?'Composição de despesas por natureza e parceiro • exercício '+contexts[page].year+'.':
+ 'Composição de pagamentos por parceiro e por mês • exercício '+contexts[page].year+'.')+'</p>'+
+ (page==="0E8"?'<div class="gcc-alert">Dados salariais sensíveis. O filtro de empresas não substitui as permissões de acesso do Sankhya.</div>':'')+
  (st.detailError?'<p class="gcc-error">'+esc(st.detailError)+'</p>':
  st.detailLoading?'<p class="gcc-muted">Consultando detalhamento…</p>':
  page==="056"?
@@ -100,7 +101,7 @@ function details(page){
 function paint(page){
  const ctx=contexts[page];if(!ctx||!visible(page))return;
  const st=state(page),rule=RULES[page],root=ctx.container;
- root.innerHTML='<header class="gg-panel gcc-intro"><div><div class="gg-kicker">CENTROS DE CUSTO • EXERCÍCIO 2025</div><h2>'+esc(rule.name)+'</h2>'+
+ root.innerHTML='<header class="gg-panel gcc-intro"><div><div class="gg-kicker">CENTROS DE CUSTO • EXERCÍCIO '+ctx.year+'</div><h2>'+esc(rule.name)+'</h2>'+
  '<p>Regras, naturezas e períodos preservados do gadget original 380. Valores aguardam conferência financeira.</p></div>'+
  '<button type="button" class="gg-button" data-gcc-refresh>Atualizar</button></header>'+filters(page)+
  '<div class="gcc-columns">'+ranking(page)+details(page)+'</div>'+
@@ -109,7 +110,7 @@ function paint(page){
 async function load(page,force){
  const ctx=contexts[page],st=state(page);if(!ctx||st.loading||!ctx.companies.length)return;
  let key;
- try{key=selectedCompanies(ctx);}catch(e){st.error=stringify(e);paint(page);return;}
+ try{key=selectedCompanies(ctx)+"|"+ctx.year;}catch(e){st.error=stringify(e);paint(page);return;}
  if(!force&&st.baseKey===key){paint(page);return;}
  st.baseKey=key;st.baseToken++;st.detailToken++;st.loading=true;st.error="";st.detailError="";st.list=[];st.natures=[];st.partners=[];st.selected=-1;st.page=1;st.hasMore=false;
  const token=st.baseToken;
@@ -142,6 +143,8 @@ async function loadDetail(page,target){
 }
 function handle(page,e){
  const ctx=contexts[page],st=state(page);if(!ctx)return;
+ const yearPicker=e.target.closest("[data-gcc-year]");
+ if(yearPicker){ctx.setYear(Number(yearPicker.value));return;}
  if(e.target.closest("[data-gcc-refresh]")){load(page,true);return;}
  if(e.target.closest("[data-gcc-apply]")){
   const ids=[...ctx.container.querySelectorAll("[data-gcc-company]:checked")].map(el=>Number(el.value)).filter(Number.isSafeInteger);
@@ -158,12 +161,23 @@ function handle(page,e){
  if(e.target.closest("[data-gcc-next]")&&st.hasMore){loadDetail(page,st.page+1);}
 }
 window.GGCentros={
- version:"0.6.0",
+ version:"1.0.2",
  render(page,options){
   if(!RULES[page])return;
+  const st=state(page);
+  if(contexts[page]&&contexts[page].year!==options.year){
+   st.baseToken++;st.detailToken++;st.loading=false;st.detailLoading=false;st.baseKey=null;
+   st.list=[];st.natures=[];st.partners=[];st.selected=-1;st.page=1;st.hasMore=false;
+  }
   contexts[page]=Object.assign({},options);
   if(!options.container.dataset.ggCentersListener){
    options.container.addEventListener("click",event=>{const p=window.GGFluxoCaixa&&window.GGFluxoCaixa.getCurrentPage();if(RULES[p])handle(p,event);});
+   options.container.addEventListener("change",event=>{
+    const picker=event.target.closest("[data-gcc-year]");
+    if(!picker)return;
+    const p=window.GGFluxoCaixa&&window.GGFluxoCaixa.getCurrentPage();
+    if(RULES[p]&&contexts[p])contexts[p].setYear(Number(picker.value));
+   });
    options.container.dataset.ggCentersListener="1";
   }
   paint(page);
