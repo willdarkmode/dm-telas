@@ -143,8 +143,6 @@ async function loadDetail(page,target){
 }
 function handle(page,e){
  const ctx=contexts[page],st=state(page);if(!ctx)return;
- const yearPicker=e.target.closest("[data-gcc-year]");
- if(yearPicker){ctx.setYear(Number(yearPicker.value));return;}
  if(e.target.closest("[data-gcc-refresh]")){load(page,true);return;}
  if(e.target.closest("[data-gcc-apply]")){
   const ids=[...ctx.container.querySelectorAll("[data-gcc-company]:checked")].map(el=>Number(el.value)).filter(Number.isSafeInteger);
